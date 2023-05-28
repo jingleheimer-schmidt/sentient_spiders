@@ -1,0 +1,9 @@
+{
+	"name": "wandering_spiders",
+	"version": "0.0.22",
+	"title": "Wandering Spiders",
+	"description": "Spiders are curious creatures, and sometimes they get bored. ",
+	"author": "asher_sky",
+	"dependencies": ["base", "SpidertronEnhancements"],
+	"factorio_version": "1.1"
+}
