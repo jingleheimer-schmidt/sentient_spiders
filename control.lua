@@ -31,6 +31,8 @@ end
 ---@param spidertron LuaEntity
 ---@param message string
 local function spider_speak(spidertron, message)
+  local manual_override = true
+  if manual_override then return end
   if math.random() > 0.5 then return end
   global.ignored_spidertrons = global.ignored_spidertrons or {}
   if global.ignored_spidertrons[spidertron.name] then return end
