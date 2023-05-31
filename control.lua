@@ -25,7 +25,7 @@ local ignored_entity_types = {
 local function chatty_print(message)
   global.chatty_print = false
   if not global.chatty_print then return end
-  game.print(message)
+  game.print("[" .. game.tick .. "]" .. message)
 end
 
 ---@param spidertron LuaEntity
