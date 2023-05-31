@@ -289,7 +289,7 @@ local function on_spider_command_completed(event)
         spider_speak(spidertron, generic_spider_speak_messages[math.random(#generic_spider_speak_messages)])
       end
     end
-  elseif destinations == 5 then
+  elseif destinations == 10 then
     spider_speak(spidertron, on_the_move_spider_speak_messages[math.random(#on_the_move_spider_speak_messages)])
   end
 end
