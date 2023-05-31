@@ -298,6 +298,19 @@ local function on_spider_command_completed(event)
   end
 end
 
+---@param event EventData.on_tick
+local function on_tick(event)
+  global.try_again_next_tick = global.try_again_next_tick or {}
+  for id, spidertron in pairs(global.try_again_next_tick) do
+    if not spidertron.valid then
+      global.try_again_next_tick[id] = nil
+      goto next_spidertron
+    end
+    send_spider_wandering(spidertron)
+    ::next_spidertron::
+  end
+end
+
 ---@param event EventData.on_player_driving_changed_state
 local function on_player_driving_changed_state(event)
   local spider = event.entity
