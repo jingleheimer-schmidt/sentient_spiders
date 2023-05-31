@@ -2,7 +2,7 @@
 	"name": "sentient_spiders",
 	"version": "0.0.22",
 	"title": "Sentient Spiders",
-	"description": "Spiders are curious creatures, and sometimes they get bored.",
+	"description": "Kick that raw fish into overdrive and give spidertrons a little sentience, as a treat. \n\nSpidertrons automatically follow their last driver. \nIdle spidertrons wander around the factory.",
 	"author": "asher_sky",
 	"dependencies": ["base", "SpidertronEnhancements"],
 	"factorio_version": "1.1"
