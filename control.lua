@@ -203,11 +203,14 @@ local function on_script_path_request_finished(event)
   if not global.request_path_ids[event.id] then return end
   chatty_print("Spidertron path request finished")
   local path = event.path
-  local spidertron = global.request_path_ids[event.id]
+  local path_request_data = global.request_path_ids[event.id]
+  local spidertron = path_request_data.spidertron
+  local resolution = path_request_data.resolution
+  local spider_was_stuck = path_request_data.spider_was_stuck
   if not spidertron and spidertron.valid then chatty_print("invalid spider") goto cleanup end
   if event.try_again_later then chatty_print("try again later") goto cleanup end
+  if ((spidertron.speed > 0) and not spider_was_stuck) then goto cleanup end
   if not path then chatty_print("no path") nudge_spidertron(spidertron) goto cleanup end
-  if spidertron.speed > 0 then goto cleanup end
   spidertron.autopilot_destination = nil
   for _, waypoint in ipairs(path) do
     spidertron.add_autopilot_destination(waypoint.position)
