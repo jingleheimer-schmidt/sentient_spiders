@@ -174,7 +174,7 @@ local function nudge_spidertron(spidertron)
     -- local non_colliding_position = spidertron.surface.find_non_colliding_position(legs[1].name, random_position, 50, 0.25)
     -- local new_position = non_colliding_position or random_position
     -- remote.call("SpidertronEnhancementsInternal-pf", "use-remote", spidertron, new_position)
-    local random_position = random_position_in_radius(spidertron.position, 15)
+    local random_position = random_position_in_radius(spidertron.position, 50)
     local legs = spidertron.get_spider_legs()
     local non_colliding_position = spidertron.surface.find_non_colliding_position(legs[1].name, random_position, 50, 0.25)
     local new_position = non_colliding_position or random_position
@@ -183,6 +183,7 @@ local function nudge_spidertron(spidertron)
     else
       table.insert(autopilot_destinations, 1, new_position)
     end
+    request_spider_path(spidertron, new_position, autopilot_destinations[#autopilot_destinations], spidertron.force, 10, -3, nil, true)
     spidertron.autopilot_destination = nil
     for _, destination in pairs(autopilot_destinations) do
       spidertron.add_autopilot_destination(destination)
@@ -190,7 +191,8 @@ local function nudge_spidertron(spidertron)
     chatty_print("Spidertron re-requested a path to the destination")
   else
     local random_position = random_position_in_radius(spidertron.position, 15)
-    remote.call("SpidertronEnhancementsInternal-pf", "use-remote", spidertron, random_position)
+    spidertron.add_autopilot_destination(random_position)
+    -- remote.call("SpidertronEnhancementsInternal-pf", "use-remote", spidertron, random_position)
     chatty_print("Spidertron requested a path to a nearby random position")
   end
 end
@@ -227,7 +229,8 @@ local function on_nth_tick(event)
     if spidertron.follow_target then goto next_spidertron end
     -- if spidertron. -- goto next_spidertron end if spider construction bots are active or logistic bots are on the way
     if spidertron.autopilot_destinations[1] then nudge_spidertron(spidertron) goto next_spidertron end
-    if math.random() > 5/10 then goto next_spidertron end
+    local chance = math.random(100)
+    if (chance < 95) then goto next_spidertron end
     chatty_print("Spidertron is bored and wants to go wandering")
     send_spider_wandering(spidertron)
     ::next_spidertron::
