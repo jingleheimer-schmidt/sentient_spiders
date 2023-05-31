@@ -128,6 +128,7 @@ end
 
 ---@param spidertron LuaEntity
 local function send_spider_wandering(spidertron)
+  if spider_has_active_bots(spidertron) then return end
   local surface = spidertron.surface
   local position = spidertron.position
   local player_built_entities = {}
@@ -138,37 +139,29 @@ local function send_spider_wandering(spidertron)
     local find_entities_filter = { ---@type LuaSurface.find_entities_filtered_param
       force = spidertron.force,
       position = wander_position,
-      radius = 10,
-      to_be_deconstructed = false,
-      -- is_military_target = true,
+      radius = 5,
+      -- to_be_deconstructed = false,
       limit = 1,
     }
     player_built_entities = surface.find_entities_filtered(find_entities_filter)
   end
   local entity = player_built_entities[1]
-  if not entity then return end
+  local unit_number = spidertron.unit_number --[[@as uint]]
+  global.try_again_next_tick = global.try_again_next_tick or {}
+  if not entity then
+    global.try_again_next_tick[unit_number] = spidertron
+    return
+  else
+    global.try_again_next_tick [unit_number] = nil
+  end
   chatty_print("Spidertron found a player built entity to wander to")
-  -- game.print("attempting to wander to [" .. entity.type .. "]")
   if ignored_entity_types[entity.type] then return end
-  game.print("attempting to wander to [" .. entity.type .. "]")
+  -- game.print("attempting to wander to [" .. entity.type .. "]")
   -- local legs = spidertron.get_spider_legs()
-  -- local path_request_parameters = { ---@type LuaSurface.request_path_param
-  --   -- bounding_box = spidertron.bounding_box,
-  --   -- collision_mask = spidertron.prototype.collision_mask,
-  --   bounding_box = legs[1].bounding_box,
-  --   collision_mask = legs[1].prototype.collision_mask,
-  --   start = position,
-  --   goal = player_built_entities[1].position,
-  --   force = spidertron.force,
-  --   radius = 10,
-  --   pathfind_flags = {low_priority = true, cache = false},
-  --   path_resolution_modifier = -3,
-  -- }
-  -- local request_path_id = surface.request_path(path_request_parameters)
-  -- global.request_path_ids = global.request_path_ids or {} ---@type table<uint, LuaEntity>
-  -- global.request_path_ids[request_path_id] = spidertron
-  -- chatty_print("Spidertron requested a path to the entity")
-  remote.call("SpidertronEnhancementsInternal-pf", "use-remote", spidertron, entity.position)
+  -- for _, leg in pairs(legs) do
+  --   request_spider_path(spidertron, leg.position, entity.position, spidertron.force, 10, -3, leg)
+  -- end
+  request_spider_path(spidertron, spidertron.position, entity.position, spidertron.force, 10, -4)
 end
 
 ---@param spidertron LuaEntity
