@@ -387,3 +387,5 @@ script.on_event(defines.events.on_robot_built_entity, on_built_entity)
 script.on_event(defines.events.on_entity_destroyed, on_entity_destroyed)
 script.on_event(defines.events.on_spider_command_completed, on_spider_command_completed)
 script.on_event(defines.events.on_script_path_request_finished, on_script_path_request_finished)
+script.on_event(defines.events.on_player_driving_changed_state, on_player_driving_changed_state)
+
