@@ -81,6 +81,19 @@ local function random_position_within_range(position, inner_radius, outer_radius
   }
 end
 
+
+---@param spidertron LuaEntity
+---@return boolean
+local function spider_has_active_bots(spidertron)
+  local cell = spidertron.logistic_cell
+  if not cell then return false end
+  local network = cell.logistic_network
+  if not network then return false end
+  if network.available_logistic_robots == network.all_logistic_robots then return false end
+  if network.available_construction_robots == network.all_construction_robots then return false end
+  return true
+end
+
 ---@param spidertron LuaEntity
 local function send_spider_wandering(spidertron)
   local surface = spidertron.surface
