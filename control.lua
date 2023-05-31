@@ -81,6 +81,38 @@ local function random_position_within_range(position, inner_radius, outer_radius
   }
 end
 
+---@param spidertron LuaEntity
+---@param start_position MapPosition
+---@param goal_position MapPosition
+---@param force ForceIdentification
+---@param radius number
+---@param path_resolution_modifier number
+---@param entity_to_ignore LuaEntity?
+---@param spider_was_stuck boolean?
+local function request_spider_path(spidertron, start_position, goal_position, force, radius, path_resolution_modifier, entity_to_ignore, spider_was_stuck)
+  local request_path_id = spidertron.surface.request_path{
+    bounding_box = {{-0.01, -0.01}, {0.01, 0.01}},
+    collision_mask = {"water-tile", "colliding-with-tiles-only", "consider-tile-transitions"},
+    start = start_position,
+    goal = goal_position,
+    force = force,
+    radius = radius,
+    pathfind_flags = {low_priority = true, cache = true},
+    path_resolution_modifier = path_resolution_modifier,
+    entity_to_ignore = entity_to_ignore,
+  }
+  ---@class PathRequestData
+  ---@field spidertron LuaEntity
+  ---@field resolution number
+  ---@field spider_was_stuck boolean?
+  global.request_path_ids = global.request_path_ids or {} ---@type table<uint, PathRequestData>
+  global.request_path_ids[request_path_id] = {
+    spidertron = spidertron,
+    resolution = -3,
+    spider_was_stuck = spider_was_stuck,
+  }
+  chatty_print("Spidertron requested a path to the entity")
+end
 
 ---@param spidertron LuaEntity
 ---@return boolean
