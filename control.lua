@@ -325,6 +325,33 @@ local function on_player_driving_changed_state(event)
   local character = player.character
   if not character then return end
   spider.follow_target = character
+---@param entity LuaEntity
+---@param player_index uint
+---@return boolean
+local function entity_is_player_character(entity, player_index)
+  local bool = false
+  if entity and entity.type == "character" then
+    if entity.player and entity.player.index == player_index then
+      bool = true
+    end
+  end
+  return bool
+end
+
+---@param entity LuaEntity
+---@return boolean, uint?
+local function entity_is_character(entity)
+  local bool = false
+  local player_index = nil
+  if entity and entity.type == "character" then
+    bool = true
+    if entity.player then
+      player_index = entity.player.index
+    end
+  end
+  return bool, player_index
+end
+
 ---@param event EventData.on_player_used_spider_remote
 local function on_player_used_spider_remote(event)
   if not event.success then return end
