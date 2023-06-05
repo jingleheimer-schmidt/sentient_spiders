@@ -23,7 +23,8 @@ local ignored_entity_types = {
 
 ---@param message string
 local function chatty_print(message)
-  global.chatty_print = false
+  -- global.chatty_print = false
+  global.chatty_print = true
   if not global.chatty_print then return end
   game.print("[" .. game.tick .. "]" .. message)
 end
@@ -134,7 +135,6 @@ local function send_spider_wandering(spidertron)
   local player_built_entities = {}
   for i = 1, 5 do
     if player_built_entities[1] then break end
-    -- local wander_position = random_position_in_radius(position, 250)
     local wander_position = random_position_within_range(position, 100, 500)
     local find_entities_filter = { ---@type LuaSurface.find_entities_filtered_param
       force = spidertron.force,
@@ -156,11 +156,6 @@ local function send_spider_wandering(spidertron)
   end
   chatty_print("Spidertron found a player built entity to wander to")
   if ignored_entity_types[entity.type] then return end
-  -- game.print("attempting to wander to [" .. entity.type .. "]")
-  -- local legs = spidertron.get_spider_legs()
-  -- for _, leg in pairs(legs) do
-  --   request_spider_path(spidertron, leg.position, entity.position, spidertron.force, 10, -3, leg)
-  -- end
   request_spider_path(spidertron, spidertron.position, entity.position, spidertron.force, 10, -4)
 end
 
