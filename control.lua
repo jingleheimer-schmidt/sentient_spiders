@@ -310,6 +310,42 @@ local function on_tick(event)
   end
 end
 
+---@param spidertron LuaEntity
+local function remove_following_spider(spidertron)
+  global.following_spiders = global.following_spiders or {}
+  for player_index, following_spiders in pairs(global.following_spiders) do
+    for unit_number, following_spider in pairs(following_spiders) do
+      if unit_number == spidertron.unit_number then
+        following_spiders[unit_number] = nil
+      end
+    end
+  end
+end
+
+---@param player LuaPlayer
+---@param spidertron LuaEntity
+local function add_following_spider(player, spidertron)
+  global.following_spiders = global.following_spiders or {}
+  global.following_spiders[player.index] = global.following_spiders[player.index] or {}
+  global.following_spiders[player.index][spidertron.unit_number] = spidertron
+end
+
+---@param player LuaPlayer
+local function relink_following_spiders(player)
+  global.following_spiders = global.following_spiders or {}
+  global.following_spiders[player.index] = global.following_spiders[player.index] or {}
+  for unit_number, spidertron in pairs(global.following_spiders[player.index]) do
+    if spidertron and spidertron.valid then
+      local follow_target = player.character or player.vehicle
+      if follow_target then
+        spidertron.follow_target = follow_target
+      end
+    else
+      global.following_spiders[player.index][unit_number] = nil
+    end
+  end
+end
+
 ---@param event EventData.on_player_driving_changed_state
 local function on_player_driving_changed_state(event)
   local spider = event.entity
