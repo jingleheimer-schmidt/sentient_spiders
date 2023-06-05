@@ -347,20 +347,26 @@ local function relink_following_spiders(player)
 end
 
 ---@param event EventData.on_player_driving_changed_state
-local function on_player_driving_changed_state(event)
-  local spider = event.entity
-  if not spider then return end
+local function update_player_followers(event)
+  local player = game.get_player(event.player_index) --[[@as LuaPlayer]]
   global.ignored_spidertrons = global.ignored_spidertrons or {}
-  if global.ignored_spidertrons[spider.name] then return end
-  local player = game.get_player(event.player_index)
-  if not player then return end
-  if not (spider.type == "spider-vehicle") then return end
-  if player.vehicle then return end
-  if spider.get_driver() then return end
-  if spider.get_passenger() then return end
-  local character = player.character
-  if not character then return end
-  spider.follow_target = character
+  global.following_spiders = global.following_spiders or {} --[[@type table<uint, table<uint, LuaEntity>>]]
+  local spidertron = event.entity and event.entity.type == "spider-vehicle" and event.entity
+  if spidertron then
+    local driver = spidertron.get_driver()
+    local passenger = spidertron.get_passenger()
+    if not driver and not passenger and not global.ignored_spidertrons[spidertron.name] then
+      add_following_spider(player, spidertron)
+    end
+  end
+  relink_following_spiders(player)
+end
+
+---@param event EventData.on_player_driving_changed_state
+local function on_player_driving_changed_state(event)
+  update_player_followers(event)
+end
+
 ---@param entity LuaEntity
 ---@param player_index uint
 ---@return boolean
