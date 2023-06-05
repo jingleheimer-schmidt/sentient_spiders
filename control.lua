@@ -325,6 +325,19 @@ local function on_player_driving_changed_state(event)
   local character = player.character
   if not character then return end
   spider.follow_target = character
+---@param event EventData.on_player_used_spider_remote
+local function on_player_used_spider_remote(event)
+  if not event.success then return end
+  if event.vehicle.follow_target then
+    remove_following_spider(event.vehicle)
+    local is_character, player_index = entity_is_character(event.vehicle.follow_target)
+    if is_character and player_index then
+      add_following_spider(game.get_player(player_index) --[[@as LuaPlayer]], event.vehicle)
+    end
+  end
+  if event.vehicle.autopilot_destinations[1] then
+    remove_following_spider(event.vehicle)
+  end
 end
 
 ---@param spidertron LuaEntity
@@ -391,4 +404,5 @@ script.on_event(defines.events.on_entity_destroyed, on_entity_destroyed)
 script.on_event(defines.events.on_spider_command_completed, on_spider_command_completed)
 script.on_event(defines.events.on_script_path_request_finished, on_script_path_request_finished)
 script.on_event(defines.events.on_player_driving_changed_state, on_player_driving_changed_state)
+script.on_event(defines.events.on_player_used_spider_remote, on_player_used_spider_remote)
 
