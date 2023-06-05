@@ -223,15 +223,16 @@ end
 -- on_nth_tick check if any spidertrons are bored and want to go off wandering
 ---@param event NthTickEventData
 local function on_nth_tick(event)
+  chatty_print("on_nth_tick")
   for destruction_id, spidertron in pairs(global.spidertrons) do
     if not spidertron.valid then
       global.spidertrons[destruction_id] = nil
       goto next_spidertron
     end
-    if spidertron.speed ~= 0 then goto next_spidertron end
-    if spidertron.follow_target then goto next_spidertron end
+    if spidertron.speed ~= 0 then chatty_print("speed ~= 0") goto next_spidertron end
+    if spidertron.follow_target then chatty_print("follow_target") goto next_spidertron end
     -- if spidertron. -- goto next_spidertron end if spider construction bots are active or logistic bots are on the way
-    if spidertron.autopilot_destinations[1] then nudge_spidertron(spidertron) goto next_spidertron end
+    if spidertron.autopilot_destinations[1] then nudge_spidertron(spidertron) chatty_print("destinations[1]") goto next_spidertron end
     local chance = math.random(100)
     if (chance < 95) then goto next_spidertron end
     chatty_print("Spidertron is bored and wants to go wandering")
