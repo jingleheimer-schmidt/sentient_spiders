@@ -232,7 +232,7 @@ local function on_nth_tick(event)
     -- if spidertron. -- goto next_spidertron end if spider construction bots are active or logistic bots are on the way
     if spidertron.autopilot_destinations[1] then nudge_spidertron(spidertron) chatty_print("destinations[1]") goto next_spidertron end
     local chance = math.random(100)
-    if (chance < 95) then goto next_spidertron end
+    if (chance < 99) then goto next_spidertron end
     chatty_print("Spidertron is bored and wants to go wandering")
     send_spider_wandering(spidertron)
     ::next_spidertron::
