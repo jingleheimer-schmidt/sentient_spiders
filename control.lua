@@ -23,8 +23,8 @@ local ignored_entity_types = {
 
 ---@param message string
 local function chatty_print(message)
-  -- global.chatty_print = false
-  global.chatty_print = true
+  global.chatty_print = false
+  -- global.chatty_print = true
   if not global.chatty_print then return end
   game.print("[" .. game.tick .. "]" .. message)
 end
