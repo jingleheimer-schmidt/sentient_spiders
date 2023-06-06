@@ -4,6 +4,6 @@
 	"title": "Sentient Spiders",
 	"description": "Kick that raw fish into overdrive and give spidertrons a little sentience, as a treat. \n\nSpidertrons automatically follow their last driver. \nIdle spidertrons wander around the factory.",
 	"author": "asher_sky",
-	"dependencies": ["base", "SpidertronEnhancements"],
+	"dependencies": ["base"],
 	"factorio_version": "1.1"
 }
