@@ -2,6 +2,7 @@
 Version: 0.0.2
 Date: 10JUN2023
   Changes:
+    - spiders with players in them will only wander if the player has been afk for more than 5 minutes
     - fixed changelog date for version 0.0.1
     - added faq file
 ---------------------------------------------------------------------------------------------------

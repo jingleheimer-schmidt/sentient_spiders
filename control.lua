@@ -239,6 +239,12 @@ local function on_nth_tick(event)
     if spidertron.autopilot_destinations[1] then nudge_spidertron(spidertron) chatty_print("destinations[1]") goto next_spidertron end
     local chance = math.random(100)
     if (chance < 99) then goto next_spidertron end
+    local driver, passenger = spidertron.get_driver(), spidertron.get_passenger()
+    if driver or passenger then chatty_print("driver or passenger")
+      local knower = driver or passenger
+      local player = knower and knower.type == "character" and knower.player or knower and knower.type == "player" and knower
+      if player and player.afk_time and player.afk_time < 60 * 60 * 5 then goto next_spidertron end
+    end
     chatty_print("Spidertron is bored and wants to go wandering")
     send_spider_wandering(spidertron)
     ::next_spidertron::
