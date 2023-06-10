@@ -227,11 +227,13 @@ end
 ---@param event NthTickEventData
 local function on_nth_tick(event)
   chatty_print("on_nth_tick")
+  local ignored_spidertrons = global.ignored_spidertrons or {}
   for destruction_id, spidertron in pairs(global.spidertrons) do
     if not spidertron.valid then
       global.spidertrons[destruction_id] = nil
       goto next_spidertron
     end
+    if ignored_spidertrons[spidertron.name] then chatty_print("ignored_spidertrons") goto next_spidertron end
     if spidertron.speed ~= 0 then chatty_print("speed ~= 0") goto next_spidertron end
     if spidertron.follow_target then chatty_print("follow_target") goto next_spidertron end
     if spider_has_active_bots(spidertron) then goto next_spidertron end
