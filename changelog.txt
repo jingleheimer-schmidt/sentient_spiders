@@ -2,9 +2,10 @@
 Version: 0.0.2
 Date: 10JUN2023
   Changes:
+    - fix changelog date for version 0.0.1
     - add faq file
 ---------------------------------------------------------------------------------------------------
 Version: 0.0.1
-Date: 28MAY2023
+Date: 05JUN2023
   Changes:
     - initial release on the mod portal
