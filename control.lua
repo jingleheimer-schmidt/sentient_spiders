@@ -129,7 +129,6 @@ end
 
 ---@param spidertron LuaEntity
 local function send_spider_wandering(spidertron)
-  if spider_has_active_bots(spidertron) then return end
   local surface = spidertron.surface
   local position = spidertron.position
   local player_built_entities = {}
@@ -235,7 +234,7 @@ local function on_nth_tick(event)
     end
     if spidertron.speed ~= 0 then chatty_print("speed ~= 0") goto next_spidertron end
     if spidertron.follow_target then chatty_print("follow_target") goto next_spidertron end
-    -- if spidertron. -- goto next_spidertron end if spider construction bots are active or logistic bots are on the way
+    if spider_has_active_bots(spidertron) then goto next_spidertron end
     if spidertron.autopilot_destinations[1] then nudge_spidertron(spidertron) chatty_print("destinations[1]") goto next_spidertron end
     local chance = math.random(100)
     if (chance < 99) then goto next_spidertron end
