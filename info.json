@@ -2,7 +2,7 @@
 	"name": "sentient_spiders",
 	"version": "0.0.2",
 	"title": "Sentient Spiders",
-	"description": "Kick that raw fish into overdrive and give spidertrons a little sentience, as a treat. \n\nSpidertrons automatically follow their last driver. \nIdle spidertrons wander around the factory.",
+	"description": "Kick that raw fish into overdrive and give spidertrons a little sentience, as a treat. \n\nSpidertrons automatically follow their last driver. \nIdle spidertrons wander around the factory. \nStuck spidertrons try to find another path to their destination.",
 	"author": "asher_sky",
 	"dependencies": ["base"],
 	"factorio_version": "1.1"

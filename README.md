@@ -8,6 +8,7 @@ Kick that raw fish into overdrive and give spidertrons a little sentience, as a 
 
 Spidertrons automatically follow their last driver.
 Idle spidertrons wander around the factory.
+Stuck spidertrons try to find another path to their destination.
 
 ---------------------
 # Features
