@@ -380,19 +380,6 @@ local function on_player_driving_changed_state(event)
 end
 
 ---@param entity LuaEntity
----@param player_index uint
----@return boolean
-local function entity_is_player_character(entity, player_index)
-  local bool = false
-  if entity and entity.type == "character" then
-    if entity.player and entity.player.index == player_index then
-      bool = true
-    end
-  end
-  return bool
-end
-
----@param entity LuaEntity
 ---@return boolean, uint?
 local function entity_is_character(entity)
   local bool = false
