@@ -260,7 +260,8 @@ local function on_nth_tick(event)
     local chance = math.random(100)
     if (chance < 99) then goto next_spidertron end
     local driver, passenger = spidertron.get_driver(), spidertron.get_passenger()
-    if driver or passenger then chatty_print("driver or passenger")
+    if driver or passenger then
+      chatty_print("driver or passenger")
       local knower = driver or passenger
       local player = knower and knower.type == "character" and knower.player or knower and knower.type == "player" and knower
       if player and player.afk_time and player.afk_time < 60 * 60 * 5 then goto next_spidertron end
