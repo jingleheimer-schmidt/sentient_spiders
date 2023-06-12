@@ -1,4 +1,5 @@
 
+--[[ factorio mod sentient spiders control script created by asher_sky --]]
 
 local ignored_entity_types = {
   ["straight-rail"] = true,
