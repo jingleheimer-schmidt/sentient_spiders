@@ -451,7 +451,6 @@ local function on_entity_destroyed(event)
 end
 
 require("interface")
-
 script.on_init(initialize_globals)
 script.on_configuration_changed(initialize_globals)
 script.on_nth_tick(60, on_nth_tick)
@@ -463,4 +462,3 @@ script.on_event(defines.events.on_spider_command_completed, on_spider_command_co
 script.on_event(defines.events.on_script_path_request_finished, on_script_path_request_finished)
 script.on_event(defines.events.on_player_driving_changed_state, on_player_driving_changed_state)
 script.on_event(defines.events.on_player_used_spider_remote, on_player_used_spider_remote)
-
