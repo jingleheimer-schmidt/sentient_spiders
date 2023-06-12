@@ -41,13 +41,13 @@ local function spider_speak(spidertron, message)
   for _, player in pairs(game.connected_players) do
     table.insert(visible_to_players, player.name)
   end
-  local color = spidertron.color or {r = 1, g = 1, b = 1}
+  local color = spidertron.color or { r = 1, g = 1, b = 1 }
   color.a = 1
   rendering.draw_text{
     text = message,
     surface = spidertron.surface,
     target = spidertron,
-    target_offset = {0, -8},
+    target_offset = { 0, -8 },
     alignment = "center",
     color = color,
     scale = 2.5,
@@ -92,13 +92,13 @@ end
 ---@param spider_was_stuck boolean?
 local function request_spider_path(spidertron, start_position, goal_position, force, radius, path_resolution_modifier, entity_to_ignore, spider_was_stuck)
   local request_path_id = spidertron.surface.request_path{
-    bounding_box = {{-0.01, -0.01}, {0.01, 0.01}},
-    collision_mask = {"water-tile", "colliding-with-tiles-only", "consider-tile-transitions"},
+    bounding_box = { { -0.01, -0.01 }, { 0.01, 0.01 } },
+    collision_mask = { "water-tile", "colliding-with-tiles-only", "consider-tile-transitions" },
     start = start_position,
     goal = goal_position,
     force = force,
     radius = radius,
-    pathfind_flags = {low_priority = true, cache = true},
+    pathfind_flags = { low_priority = true, cache = true },
     path_resolution_modifier = path_resolution_modifier,
     entity_to_ignore = entity_to_ignore,
   }
@@ -151,7 +151,7 @@ local function send_spider_wandering(spidertron)
     global.try_again_next_tick[unit_number] = spidertron
     return
   else
-    global.try_again_next_tick [unit_number] = nil
+    global.try_again_next_tick[unit_number] = nil
   end
   chatty_print("Spidertron found a player built entity to wander to")
   if ignored_entity_types[entity.type] then return end
@@ -170,7 +170,7 @@ local function nudge_spidertron(spidertron)
     local non_colliding_position = spidertron.surface.find_tiles_filtered({
       position = spidertron.position,
       radius = 15,
-      collision_mask = {"water-tile"},
+      collision_mask = { "water-tile" },
       invert = true,
       limit = 1,
     })
@@ -204,8 +204,14 @@ local function on_script_path_request_finished(event)
   local spidertron = path_request_data.spidertron
   local resolution = path_request_data.resolution
   local spider_was_stuck = path_request_data.spider_was_stuck
-  if not spidertron and spidertron.valid then chatty_print("invalid spider") goto cleanup end
-  if event.try_again_later then chatty_print("try again later") goto cleanup end
+  if not spidertron and spidertron.valid then
+    chatty_print("invalid spider")
+    goto cleanup
+  end
+  if event.try_again_later then
+    chatty_print("try again later")
+    goto cleanup
+  end
   if ((spidertron.speed > 0) and not spider_was_stuck) then goto cleanup end
   if not path then
     chatty_print("no path")
@@ -233,11 +239,24 @@ local function on_nth_tick(event)
       global.spidertrons[destruction_id] = nil
       goto next_spidertron
     end
-    if ignored_spidertrons[spidertron.name] then chatty_print("ignored_spidertrons") goto next_spidertron end
-    if spidertron.speed ~= 0 then chatty_print("speed ~= 0") goto next_spidertron end
-    if spidertron.follow_target then chatty_print("follow_target") goto next_spidertron end
+    if ignored_spidertrons[spidertron.name] then
+      chatty_print("ignored_spidertrons")
+      goto next_spidertron
+    end
+    if spidertron.speed ~= 0 then
+      chatty_print("speed ~= 0")
+      goto next_spidertron
+    end
+    if spidertron.follow_target then
+      chatty_print("follow_target")
+      goto next_spidertron
+    end
     if spider_has_active_bots(spidertron) then goto next_spidertron end
-    if spidertron.autopilot_destinations[1] then nudge_spidertron(spidertron) chatty_print("destinations[1]") goto next_spidertron end
+    if spidertron.autopilot_destinations[1] then
+      nudge_spidertron(spidertron)
+      chatty_print("destinations[1]")
+      goto next_spidertron
+    end
     local chance = math.random(100)
     if (chance < 99) then goto next_spidertron end
     local driver, passenger = spidertron.get_driver(), spidertron.get_passenger()
@@ -426,7 +445,7 @@ end
 local function initialize_globals()
   global.spidertrons = {}
   for _, surface in pairs(game.surfaces) do
-    for _, spidertron in pairs(surface.find_entities_filtered{type = "spider-vehicle"}) do
+    for _, spidertron in pairs(surface.find_entities_filtered { type = "spider-vehicle" }) do
       if not spidertron and not spidertron.valid then goto next_spidertron end
       add_spider(spidertron)
       ::next_spidertron::
