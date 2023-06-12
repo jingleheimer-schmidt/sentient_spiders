@@ -1,5 +1,4 @@
 
-require("util")
 
 local ignored_entity_types = {
   ["straight-rail"] = true,
