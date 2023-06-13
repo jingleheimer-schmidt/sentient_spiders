@@ -1,25 +1,7 @@
 
 --[[ factorio mod sentient spiders control script created by asher_sky --]]
 
-local ignored_entity_types = {
-  ["straight-rail"] = true,
-  ["curved-rail"] = true,
-  ["electric-pole"] = true,
-  ["radar"] = true,
-  ['rail-signal'] = true,
-  ['rail-chain-signal'] = true,
-  ['wall'] = true,
-  ['gate'] = true,
-  ['car'] = true,
-  ['locomotive'] = true,
-  ['cargo-wagon'] = true,
-  ['fluid-wagon'] = true,
-  ['artillery-wagon'] = true,
-  ['artillery-turret'] = true,
-  ["unit"] = true,
-  ["turret"] = true,
-  ["unit-spawner"] = true,
-}
+local ignored_entity_types = require("ignored_entity_types")
 
 ---@param message string
 local function chatty_print(message)
