@@ -110,6 +110,33 @@ local function spider_has_active_bots(spidertron)
 end
 
 ---@param spidertron LuaEntity
+local function set_last_interacted_tick(spidertron)
+  global.last_interacted_tick = global.last_interacted_tick or {} ---@type table<uint, uint>
+  global.last_interacted_tick[spidertron.unit_number] = game.tick
+end
+
+---@param spidertron LuaEntity
+---@return uint
+local function get_last_interacted_tick(spidertron)
+  global.last_interacted_tick = global.last_interacted_tick or {}
+  return global.last_interacted_tick[spidertron.unit_number] or 0
+end
+
+---@param spidertron LuaEntity
+---@return boolean
+local function get_player_initiated_movement(spidertron)
+  global.player_initiated_movement = global.player_initiated_movement or {}
+  return global.player_initiated_movement[spidertron.unit_number]
+end
+
+---@param spidertron LuaEntity
+---@param value boolean
+local function set_player_initiated_movement(spidertron, value)
+  global.player_initiated_movement = global.player_initiated_movement or {} ---@type table<uint, boolean>
+  global.player_initiated_movement[spidertron.unit_number] = value
+end
+
+---@param spidertron LuaEntity
 local function send_spider_wandering(spidertron)
   local surface = spidertron.surface
   local position = spidertron.position
@@ -226,14 +253,17 @@ local function on_nth_tick(event)
       goto next_spidertron
     end
     if spidertron.speed ~= 0 then
+      -- set_last_active_tick(spidertron)
       chatty_print("speed ~= 0")
       goto next_spidertron
     end
     if spidertron.follow_target then
+      -- set_last_active_tick(spidertron)
       chatty_print("follow_target")
       goto next_spidertron
     end
     if spider_has_active_bots(spidertron) then goto next_spidertron end
+      -- set_last_interacted_tick(spidertron)
     if spidertron.autopilot_destinations[1] then
       nudge_spidertron(spidertron)
       chatty_print("destinations[1]")
@@ -247,6 +277,10 @@ local function on_nth_tick(event)
       local knower = driver or passenger
       local player = knower and knower.type == "character" and knower.player or knower and knower.type == "player" and knower
       if player and player.afk_time and player.afk_time < 60 * 60 * 5 then goto next_spidertron end
+    end
+    if get_last_interacted_tick(spidertron) + 60 * 60 * 5 > game.tick then
+      chatty_print("last_active_tick")
+      goto next_spidertron
     end
     chatty_print("Spidertron is bored and wants to go wandering")
     send_spider_wandering(spidertron)
@@ -289,6 +323,10 @@ local function on_spider_command_completed(event)
   local spidertron = event.vehicle
   local destinations = #spidertron.autopilot_destinations
   if destinations == 0 then
+    if get_player_initiated_movement(spidertron) then
+      set_last_interacted_tick(spidertron)
+      set_player_initiated_movement(spidertron, false)
+    end
     local find_entities_filter = { ---@type LuaSurface.find_entities_filtered_param
       force = spidertron.force,
       position = spidertron.position,
@@ -367,6 +405,7 @@ local function update_player_followers(event)
   global.following_spiders = global.following_spiders or {} --[[@type table<uint, table<uint, LuaEntity>>]]
   local spidertron = event.entity and event.entity.type == "spider-vehicle" and event.entity
   if spidertron then
+    set_last_interacted_tick(spidertron)
     local driver = spidertron.get_driver()
     local passenger = spidertron.get_passenger()
     if not driver and not passenger and not global.ignored_spidertrons[spidertron.name] then
@@ -408,6 +447,7 @@ local function on_player_used_spider_remote(event)
   if event.vehicle.autopilot_destinations[1] then
     remove_following_spider(event.vehicle)
   end
+  set_last_interacted_tick(spidertron)
 end
 
 ---@param spidertron LuaEntity
@@ -445,6 +485,7 @@ local function on_built_entity(event)
   if event.created_entity.type ~= "spider-vehicle" then return end
   local spidertron = event.created_entity
   add_spider(spidertron)
+  set_last_interacted_tick(spidertron)
 end
 
 ---@param event EventData.on_entity_destroyed
