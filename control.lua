@@ -262,8 +262,10 @@ local function on_nth_tick(event)
       chatty_print("follow_target")
       goto next_spidertron
     end
-    if spider_has_active_bots(spidertron) then goto next_spidertron end
+    if spider_has_active_bots(spidertron) then
       -- set_last_interacted_tick(spidertron)
+      goto next_spidertron
+    end
     if spidertron.autopilot_destinations[1] then
       nudge_spidertron(spidertron)
       chatty_print("destinations[1]")
