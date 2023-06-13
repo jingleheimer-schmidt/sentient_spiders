@@ -147,7 +147,7 @@ local function nudge_spidertron(spidertron)
   chatty_print("nudging spidertron")
   if destination_count >= 1 then
     local random_position = random_position_in_radius(spidertron.position, 50)
-    local legs = spidertron.get_spider_legs()
+    -- local legs = spidertron.get_spider_legs()
     -- local non_colliding_position = spidertron.surface.find_non_colliding_position(legs[1].name, random_position, 50, 0.25)
     local non_colliding_position = spidertron.surface.find_tiles_filtered({
       position = spidertron.position,
@@ -184,7 +184,7 @@ local function on_script_path_request_finished(event)
   local path = event.path
   local path_request_data = global.request_path_ids[event.id]
   local spidertron = path_request_data.spidertron
-  local resolution = path_request_data.resolution
+  -- local resolution = path_request_data.resolution
   local spider_was_stuck = path_request_data.spider_was_stuck
   if not spidertron and spidertron.valid then
     chatty_print("invalid spider")
