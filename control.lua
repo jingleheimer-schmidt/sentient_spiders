@@ -155,7 +155,7 @@ local function send_spider_wandering(spidertron)
   end
   local entity = player_built_entities[1]
   local unit_number = spidertron.unit_number --[[@as uint]]
-  global.try_again_next_tick = global.try_again_next_tick or {}
+  global.try_again_next_tick = global.try_again_next_tick or {} ---@type table<uint, LuaEntity?>
   if not entity then
     global.try_again_next_tick[unit_number] = spidertron
     return
