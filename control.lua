@@ -439,15 +439,17 @@ end
 ---@param event EventData.on_player_used_spider_remote
 local function on_player_used_spider_remote(event)
   if not event.success then return end
-  if event.vehicle.follow_target then
-    remove_following_spider(event.vehicle)
-    local is_character, player_index = entity_is_character(event.vehicle.follow_target)
+  local spidertron = event.vehicle
+  if spidertron.follow_target then
+    remove_following_spider(spidertron)
+    local is_character, player_index = entity_is_character(spidertron.follow_target)
     if is_character and player_index then
-      add_following_spider(game.get_player(player_index) --[[@as LuaPlayer]], event.vehicle)
+      add_following_spider(game.get_player(player_index) --[[@as LuaPlayer]], spidertron)
     end
   end
-  if event.vehicle.autopilot_destinations[1] then
-    remove_following_spider(event.vehicle)
+  if spidertron.autopilot_destinations[1] then
+    remove_following_spider(spidertron)
+    set_player_initiated_movement(spidertron, true)
   end
   set_last_interacted_tick(spidertron)
 end
