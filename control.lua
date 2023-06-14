@@ -146,17 +146,17 @@ local function get_last_interacted_tick(spidertron)
 end
 
 ---@param spidertron LuaEntity
----@return boolean
-local function get_player_initiated_movement(spidertron)
-  global.player_initiated_movement = global.player_initiated_movement or {}
-  return global.player_initiated_movement[spidertron.unit_number]
-end
-
----@param spidertron LuaEntity
 ---@param value boolean
 local function set_player_initiated_movement(spidertron, value)
   global.player_initiated_movement = global.player_initiated_movement or {} ---@type table<uint, boolean>
   global.player_initiated_movement[spidertron.unit_number] = value
+end
+
+---@param spidertron LuaEntity
+---@return boolean
+local function get_player_initiated_movement(spidertron)
+  global.player_initiated_movement = global.player_initiated_movement or {}
+  return global.player_initiated_movement[spidertron.unit_number]
 end
 
 ---@param spidertron LuaEntity
