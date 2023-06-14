@@ -94,7 +94,8 @@ end
 ---@param path_resolution_modifier number
 ---@param entity_to_ignore LuaEntity?
 ---@param spider_was_stuck boolean?
-local function request_spider_path(spidertron, start_position, goal_position, force, radius, path_resolution_modifier, entity_to_ignore, spider_was_stuck)
+---@param goal_entity LuaEntity?
+local function request_spider_path(spidertron, start_position, goal_position, force, radius, path_resolution_modifier, entity_to_ignore, spider_was_stuck, goal_entity)
   local request_path_id = spidertron.surface.request_path{
     bounding_box = { { -0.01, -0.01 }, { 0.01, 0.01 } },
     collision_mask = { "water-tile", "colliding-with-tiles-only", "consider-tile-transitions" },
