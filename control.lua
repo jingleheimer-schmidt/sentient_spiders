@@ -454,6 +454,13 @@ local function on_player_used_spider_remote(event)
   set_last_interacted_tick(spidertron)
 end
 
+---@param event EventData.on_player_changed_surface
+local function on_player_changed_surface(event)
+  local player = game.get_player(event.player_index)
+  if not player then return end
+  relink_following_spiders(player)
+end
+
 ---@param spidertron LuaEntity
 local function add_spider(spidertron)
   global.ignored_spidertrons = global.ignored_spidertrons or {}
@@ -505,6 +512,7 @@ script.on_event(defines.events.on_tick, on_tick)
 script.on_event(defines.events.on_built_entity, on_built_entity)
 script.on_event(defines.events.on_robot_built_entity, on_built_entity)
 script.on_event(defines.events.on_entity_destroyed, on_entity_destroyed)
+script.on_event(defines.events.on_player_changed_surface, on_player_changed_surface)
 script.on_event(defines.events.on_spider_command_completed, on_spider_command_completed)
 script.on_event(defines.events.on_script_path_request_finished, on_script_path_request_finished)
 script.on_event(defines.events.on_player_driving_changed_state, on_player_driving_changed_state)
