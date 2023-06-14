@@ -513,10 +513,21 @@ local function initialize_globals()
   }
 end
 
+---@return string
+local function random_backer_name()
+  local backer_names = game.backer_names
+  local count = table_size(backer_names)
+  local index = math.random(1, count)
+  return backer_names[index]
+end
+
 ---@param event EventData.on_built_entity | EventData.on_robot_built_entity
 local function on_built_entity(event)
   if event.created_entity.type ~= "spider-vehicle" then return end
   local spidertron = event.created_entity
+  if not spidertron.entity_label then
+    spidertron.entity_label = random_backer_name()
+  end
   add_spider(spidertron)
   set_last_interacted_tick(spidertron)
 end
