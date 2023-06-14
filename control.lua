@@ -242,7 +242,7 @@ local function on_script_path_request_finished(event)
   end
   if ((spidertron.speed > 0) and not spider_was_stuck) then goto cleanup end
   if not path then
-    chatty_print(chatty_name .. " received [[color=red]no_path[]/color] signal from pathfinder")
+    chatty_print(chatty_name .. " received [[color=red]no_path[/color]] signal from pathfinder")
     if spidertron.speed == 0 then
       nudge_spidertron(spidertron)
     end
@@ -294,7 +294,7 @@ local function on_nth_tick(event)
     if (math.random(100) < 99) then
       goto next_spidertron
     end
-    chatty_print(chatty_name .. " is bored and wants to go wandering")
+    chatty_print(get_chatty_name(spidertron) .. " is bored and wants to go wandering")
     send_spider_wandering(spidertron)
     ::next_spidertron::
   end
