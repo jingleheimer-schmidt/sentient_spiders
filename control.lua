@@ -421,7 +421,7 @@ local function relink_following_spiders(player)
 end
 
 ---@param event EventData.on_player_driving_changed_state
-local function update_player_followers(event)
+local function on_player_driving_changed_state(event)
   local player = game.get_player(event.player_index) --[[@as LuaPlayer]]
   global.ignored_spidertrons = global.ignored_spidertrons or {}
   global.following_spiders = global.following_spiders or {} --[[@type table<uint, table<uint, LuaEntity>>]]
@@ -435,11 +435,6 @@ local function update_player_followers(event)
     end
   end
   relink_following_spiders(player)
-end
-
----@param event EventData.on_player_driving_changed_state
-local function on_player_driving_changed_state(event)
-  update_player_followers(event)
 end
 
 ---@param entity LuaEntity
