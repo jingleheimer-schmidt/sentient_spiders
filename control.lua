@@ -509,8 +509,7 @@ end
 ---@return string
 local function random_backer_name()
   local backer_names = game.backer_names
-  local count = table_size(backer_names)
-  local index = math.random(1, count)
+  local index = math.random(#backer_names)
   return backer_names[index]
 end
 
