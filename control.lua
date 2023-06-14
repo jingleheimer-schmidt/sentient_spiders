@@ -284,12 +284,6 @@ local function on_nth_tick(event)
       chatty_print(chatty_name .. " desire to wander calmed by [active robots]")
       goto next_spidertron
     end
-    if spidertron.autopilot_destinations[1] then
-      nudge_spidertron(spidertron)
-      goto next_spidertron
-    end
-    local chance = math.random(100)
-    if (chance < 99) then goto next_spidertron end
     local driver, passenger = spidertron.get_driver(), spidertron.get_passenger()
     if driver or passenger then
       local knower = driver or passenger
@@ -301,6 +295,12 @@ local function on_nth_tick(event)
     end
     if get_last_interacted_tick(spidertron) + 60 * 60 * 5 > game.tick then
       chatty_print(chatty_name .. " desire to wander calmed by [recent interaction activity]")
+      goto next_spidertron
+    end
+    local chance = math.random(100)
+    if (chance < 99) then goto next_spidertron end
+    if spidertron.autopilot_destinations[1] then
+      nudge_spidertron(spidertron)
       goto next_spidertron
     end
     chatty_print(chatty_name .. " is bored and wants to go wandering")
