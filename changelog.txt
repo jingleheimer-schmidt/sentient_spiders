@@ -3,6 +3,7 @@ Version: 0.0.3
 Date: 13JUN2023
   Changes:
     - spiders won't wander if they were interacted with or reached a destination a player sent them to within the last 5 minutes
+    - unnamed spidertrons are given a random backer_name when built
     - spiders that were following a player that changed surfaces will re-follow the player when they return to the surface
 ---------------------------------------------------------------------------------------------------
 Version: 0.0.2
