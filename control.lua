@@ -165,7 +165,7 @@ local function send_spider_wandering(spidertron)
   local position = spidertron.position
   local player_built_entities = {}
   for i = 1, 5 do
-    if player_built_entities[1] then break end
+    if player_built_entities[1] and not ignored_entity_types[player_built_entities[1].type] then break end
     local wander_position = random_position_within_range(position, 100, 500)
     local find_entities_filter = { ---@type LuaSurface.find_entities_filtered_param
       force = spidertron.force,
@@ -186,7 +186,6 @@ local function send_spider_wandering(spidertron)
     global.try_again_next_tick[unit_number] = nil
   end
   chatty_print("Spidertron found a player built entity to wander to")
-  if ignored_entity_types[entity.type] then return end
   request_spider_path(spidertron, spidertron.position, entity.position, spidertron.force, 10, -4)
 end
 
