@@ -276,20 +276,22 @@ local function on_nth_tick(event)
       global.spidertrons[destruction_id] = nil
       goto next_spidertron
     end
+    if not spidertron_is_idle(spidertron) then
       goto next_spidertron
     end
+    if spidertron.autopilot_destinations[1] then
       nudge_spidertron(spidertron)
       goto next_spidertron
     end
+    local rider = spidertron.get_driver() or spidertron.get_passenger()
+    local player = rider and rider.type == "character" and rider.player or rider and rider.type == "player" and rider
+    if player and player.afk_time and player.afk_time < 60 * 60 * 5 then
       goto next_spidertron
     end
     if get_last_interacted_tick(spidertron) + 60 * 60 * 5 > game.tick then
       goto next_spidertron
     end
-    local chance = math.random(100)
-    if (chance < 99) then goto next_spidertron end
-    if spidertron.autopilot_destinations[1] then
-      nudge_spidertron(spidertron)
+    if (math.random(100) < 99) then
       goto next_spidertron
     end
     chatty_print(chatty_name .. " is bored and wants to go wandering")
