@@ -191,7 +191,7 @@ local function send_spider_wandering(spidertron)
     global.try_again_next_tick[unit_number] = nil
   end
   chatty_print(chatty_name .. " found a wander target: " .. get_chatty_name(entity))
-  request_spider_path(spidertron, spidertron.position, entity.position, spidertron.force, 10, -4)
+  request_spider_path(spidertron, spidertron.position, entity.position, spidertron.force, 10, -4, nil, nil, entity)
 end
 
 ---@param spidertron LuaEntity
