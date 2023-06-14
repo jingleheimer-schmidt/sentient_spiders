@@ -11,6 +11,28 @@ local function chatty_print(message)
   game.print("[" .. game.tick .. "]" .. message)
 end
 
+---@param entity LuaEntity
+---@return string
+local function chatty_name(entity)
+  local id = entity.entity_label or entity.backer_name or entity.unit_number or script.register_on_entity_destroyed(entity)
+  if entity.type == "character" and entity.player then
+    id = entity.player.name
+  end
+  local name = entity.type .. id
+  local color = entity.color
+  if color then
+    name = "[color=" .. color.r .. "," .. color.g .. "," .. color.b .. "]" .. name .. "[/color]"
+  end
+  return name
+end
+
+---@param entity LuaEntity
+---@return string
+local function chatty_position(entity)
+  local position = serpent.line(entity.position)
+  return position
+end
+
 ---@param spidertron LuaEntity
 ---@param message string
 local function spider_speak(spidertron, message)
