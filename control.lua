@@ -198,14 +198,22 @@ end
 local function nudge_spidertron(spidertron)
   local autopilot_destinations = spidertron.autopilot_destinations
   local destination_count = #autopilot_destinations
-  local non_colliding_position = spidertron.surface.find_tiles_filtered({
-    position = spidertron.position,
-    radius = 15,
-    collision_mask = { "water-tile" },
-    invert = true,
-    limit = 1,
-  })
-  local new_position = non_colliding_position and non_colliding_position[1] and non_colliding_position[1].position or random_position_in_radius(spidertron.position, 50)
+  local new_position = nil
+  for i = 1, 5 do
+    if new_position then break end
+    local nearby_position = random_position_within_range(spidertron.position, 25, 50)
+    local non_colliding_position = spidertron.surface.find_tiles_filtered({
+      position = nearby_position,
+      radius = 10,
+      collision_mask = { "water-tile" },
+      invert = true,
+      limit = 1,
+    })
+    new_position = non_colliding_position and non_colliding_position[1] and non_colliding_position[1].position
+  end
+  -- local new_position = non_colliding_position and non_colliding_position[1] and non_colliding_position[1].position or nearby_position
+  new_position = new_position or random_position_within_range(spidertron.position, 10, 30)
+  chatty_print(get_chatty_name(spidertron) .. " is stuck. autopilot re-routed via " .. get_chatty_position(new_position))
   if destination_count >= 1 then
     if destination_count > 1 then
       autopilot_destinations[1] = new_position
@@ -220,7 +228,6 @@ local function nudge_spidertron(spidertron)
   else
     spidertron.add_autopilot_destination(new_position)
   end
-  chatty_print(get_chatty_name(spidertron) .. " is stuck. autopilot re-routed via " .. get_chatty_position(spidertron.autopilot_destination))
 end
 
 ---@param event EventData.on_script_path_request_finished
