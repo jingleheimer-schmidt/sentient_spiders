@@ -27,7 +27,7 @@ local function get_chatty_name(entity)
   return "[" .. name .. "]"
 end
 
----@param entity LuaEntity|MapPosition
+---@param entity LuaEntity|MapPosition|TilePosition
 ---@return string
 local function get_chatty_position(entity)
   local position = serpent.line(entity.position or entity)
