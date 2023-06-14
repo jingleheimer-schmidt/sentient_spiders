@@ -257,44 +257,33 @@ local function on_script_path_request_finished(event)
   global.request_path_ids[event.id] = nil
 end
 
+---@param spidertron LuaEntity
+---@return boolean
+local function spidertron_is_idle(spidertron)
+  local ignored_spidertrons = global.ignored_spidertrons or {}
+  if ignored_spidertrons[spidertron.name] then return false end
+  if spidertron.speed ~= 0 then return false end
+  if spidertron.follow_target then return false end
+  if spider_has_active_bots(spidertron) then return false end
+  return true
+end
+
 -- on_nth_tick check if any spidertrons are bored and want to go off wandering
 ---@param event NthTickEventData
 local function on_nth_tick(event)
-  local ignored_spidertrons = global.ignored_spidertrons or {}
   for destruction_id, spidertron in pairs(global.spidertrons) do
     if not spidertron.valid then
       global.spidertrons[destruction_id] = nil
       goto next_spidertron
     end
-    if ignored_spidertrons[spidertron.name] then
       goto next_spidertron
     end
-    if spidertron.speed ~= 0 then
-      -- set_last_active_tick(spidertron)
+      nudge_spidertron(spidertron)
       goto next_spidertron
     end
-    local chatty_name = get_chatty_name(spidertron)
-    if spidertron.follow_target then
-      -- set_last_active_tick(spidertron)
-      chatty_print(chatty_name .. " desire to wander calmed by [follow_target]")
       goto next_spidertron
-    end
-    if spider_has_active_bots(spidertron) then
-      -- set_last_interacted_tick(spidertron)
-      chatty_print(chatty_name .. " desire to wander calmed by [active robots]")
-      goto next_spidertron
-    end
-    local driver, passenger = spidertron.get_driver(), spidertron.get_passenger()
-    if driver or passenger then
-      local knower = driver or passenger
-      local player = knower and knower.type == "character" and knower.player or knower and knower.type == "player" and knower
-      if player and player.afk_time and player.afk_time < 60 * 60 * 5 then
-        chatty_print(chatty_name .. " desire to wander calmed by [recent rider activity]")
-        goto next_spidertron
-      end
     end
     if get_last_interacted_tick(spidertron) + 60 * 60 * 5 > game.tick then
-      chatty_print(chatty_name .. " desire to wander calmed by [recent interaction activity]")
       goto next_spidertron
     end
     local chance = math.random(100)
