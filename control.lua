@@ -19,7 +19,7 @@ local function get_chatty_name(entity)
   if entity.type == "character" and entity.player then
     id = entity.player.name
   end
-  local name = entity.type .. id
+  local name = entity.name .. " " .. id
   local color = entity.color
   if color then
     name = "[color=" .. color.r .. "," .. color.g .. "," .. color.b .. "]" .. name .. "[/color]"
