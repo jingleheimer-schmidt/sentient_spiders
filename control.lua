@@ -8,12 +8,13 @@ local function chatty_print(message)
   global.chatty_print = false
   -- global.chatty_print = true
   if not global.chatty_print then return end
-  game.print("[" .. game.tick .. "]" .. message)
+  game.print("[" .. game.tick .. "] " .. message)
 end
 
----@param entity LuaEntity
+---@param entity LuaEntity?
 ---@return string
-local function chatty_name(entity)
+local function get_chatty_name(entity)
+  if not entity then return "" end
   local id = entity.entity_label or entity.backer_name or entity.unit_number or script.register_on_entity_destroyed(entity)
   if entity.type == "character" and entity.player then
     id = entity.player.name
@@ -23,13 +24,13 @@ local function chatty_name(entity)
   if color then
     name = "[color=" .. color.r .. "," .. color.g .. "," .. color.b .. "]" .. name .. "[/color]"
   end
-  return name
+  return "[" .. name .. "]"
 end
 
----@param entity LuaEntity
+---@param entity LuaEntity|MapPosition
 ---@return string
-local function chatty_position(entity)
-  local position = serpent.line(entity.position)
+local function get_chatty_position(entity)
+  local position = serpent.line(entity.position or entity)
   return position
 end
 
@@ -117,7 +118,7 @@ local function request_spider_path(spidertron, start_position, goal_position, fo
     resolution = -3,
     spider_was_stuck = spider_was_stuck,
   }
-  chatty_print("Spidertron requested a path to the entity")
+  chatty_print(get_chatty_name(spidertron) .. " requested a path to " .. get_chatty_name(goal_entity) .. " " .. serpent.line(goal_position))
 end
 
 ---@param spidertron LuaEntity
@@ -136,6 +137,7 @@ end
 local function set_last_interacted_tick(spidertron)
   global.last_interacted_tick = global.last_interacted_tick or {} ---@type table<uint, uint>
   global.last_interacted_tick[spidertron.unit_number] = game.tick
+  chatty_print(get_chatty_name(spidertron) .. " last_interacted_tick set to [" .. game.tick .. "]")
 end
 
 ---@param spidertron LuaEntity
@@ -150,6 +152,7 @@ end
 local function set_player_initiated_movement(spidertron, value)
   global.player_initiated_movement = global.player_initiated_movement or {} ---@type table<uint, boolean>
   global.player_initiated_movement[spidertron.unit_number] = value
+  chatty_print(get_chatty_name(spidertron) .. " player_initiated_movement set to [" .. value .. "]")
 end
 
 ---@param spidertron LuaEntity
@@ -163,6 +166,7 @@ end
 local function send_spider_wandering(spidertron)
   local surface = spidertron.surface
   local position = spidertron.position
+  local chatty_name = get_chatty_name(spidertron)
   local player_built_entities = {}
   for i = 1, 5 do
     if player_built_entities[1] and not ignored_entity_types[player_built_entities[1].type] then break end
@@ -181,11 +185,12 @@ local function send_spider_wandering(spidertron)
   global.try_again_next_tick = global.try_again_next_tick or {} ---@type table<uint, LuaEntity?>
   if not entity then
     global.try_again_next_tick[unit_number] = spidertron
+    chatty_print(chatty_name .. " did not find a wander target")
     return
   else
     global.try_again_next_tick[unit_number] = nil
   end
-  chatty_print("Spidertron found a player built entity to wander to")
+  chatty_print(chatty_name .. " found a wander target: " .. get_chatty_name(entity))
   request_spider_path(spidertron, spidertron.position, entity.position, spidertron.force, 10, -4)
 end
 
@@ -193,7 +198,6 @@ end
 local function nudge_spidertron(spidertron)
   local autopilot_destinations = spidertron.autopilot_destinations
   local destination_count = #autopilot_destinations
-  chatty_print("nudging spidertron")
   local non_colliding_position = spidertron.surface.find_tiles_filtered({
     position = spidertron.position,
     radius = 15,
@@ -213,34 +217,32 @@ local function nudge_spidertron(spidertron)
     for _, destination in pairs(autopilot_destinations) do
       spidertron.add_autopilot_destination(destination)
     end
-    chatty_print("Spidertron re-requested a path to the destination")
   else
-    chatty_print("Spidertron requested a path to a nearby random position")
     spidertron.add_autopilot_destination(new_position)
   end
+  chatty_print(get_chatty_name(spidertron) .. " is stuck. autopilot re-routed via " .. get_chatty_position(spidertron.autopilot_destination))
 end
 
 ---@param event EventData.on_script_path_request_finished
 local function on_script_path_request_finished(event)
   global.request_path_ids = global.request_path_ids or {}
   if not global.request_path_ids[event.id] then return end
-  chatty_print("Spidertron path request finished")
   local path = event.path
   local path_request_data = global.request_path_ids[event.id]
   local spidertron = path_request_data.spidertron
+  local chatty_name = get_chatty_name(spidertron)
   -- local resolution = path_request_data.resolution
   local spider_was_stuck = path_request_data.spider_was_stuck
   if not spidertron and spidertron.valid then
-    chatty_print("invalid spider")
     goto cleanup
   end
   if event.try_again_later then
-    chatty_print("try again later")
+    chatty_print(chatty_name .. " received [[color=yellow]try_again_later[/color]] signal from pathfinder")
     goto cleanup
   end
   if ((spidertron.speed > 0) and not spider_was_stuck) then goto cleanup end
   if not path then
-    chatty_print("no path")
+    chatty_print(chatty_name .. " received [[color=red]no_path[]/color] signal from pathfinder")
     if spidertron.speed == 0 then
       nudge_spidertron(spidertron)
     end
@@ -250,7 +252,7 @@ local function on_script_path_request_finished(event)
   for _, waypoint in ipairs(path) do
     spidertron.add_autopilot_destination(waypoint.position)
   end
-  chatty_print("Spidertron wander path memorized")
+  chatty_print(chatty_name .. " received path data from request [" .. event.id .. "]")
   ::cleanup::
   global.request_path_ids[event.id] = nil
 end
@@ -258,7 +260,6 @@ end
 -- on_nth_tick check if any spidertrons are bored and want to go off wandering
 ---@param event NthTickEventData
 local function on_nth_tick(event)
-  chatty_print("on_nth_tick")
   local ignored_spidertrons = global.ignored_spidertrons or {}
   for destruction_id, spidertron in pairs(global.spidertrons) do
     if not spidertron.valid then
@@ -266,42 +267,43 @@ local function on_nth_tick(event)
       goto next_spidertron
     end
     if ignored_spidertrons[spidertron.name] then
-      chatty_print("ignored_spidertrons")
       goto next_spidertron
     end
     if spidertron.speed ~= 0 then
       -- set_last_active_tick(spidertron)
-      chatty_print("speed ~= 0")
       goto next_spidertron
     end
+    local chatty_name = get_chatty_name(spidertron)
     if spidertron.follow_target then
       -- set_last_active_tick(spidertron)
-      chatty_print("follow_target")
+      chatty_print(chatty_name .. " desire to wander calmed by [follow_target]")
       goto next_spidertron
     end
     if spider_has_active_bots(spidertron) then
       -- set_last_interacted_tick(spidertron)
+      chatty_print(chatty_name .. " desire to wander calmed by [active robots]")
       goto next_spidertron
     end
     if spidertron.autopilot_destinations[1] then
       nudge_spidertron(spidertron)
-      chatty_print("destinations[1]")
       goto next_spidertron
     end
     local chance = math.random(100)
     if (chance < 99) then goto next_spidertron end
     local driver, passenger = spidertron.get_driver(), spidertron.get_passenger()
     if driver or passenger then
-      chatty_print("driver or passenger")
       local knower = driver or passenger
       local player = knower and knower.type == "character" and knower.player or knower and knower.type == "player" and knower
-      if player and player.afk_time and player.afk_time < 60 * 60 * 5 then goto next_spidertron end
+      if player and player.afk_time and player.afk_time < 60 * 60 * 5 then
+        chatty_print(chatty_name .. " desire to wander calmed by [recent rider activity]")
+        goto next_spidertron
+      end
     end
     if get_last_interacted_tick(spidertron) + 60 * 60 * 5 > game.tick then
-      chatty_print("last_active_tick")
+      chatty_print(chatty_name .. " desire to wander calmed by [recent interaction activity]")
       goto next_spidertron
     end
-    chatty_print("Spidertron is bored and wants to go wandering")
+    chatty_print(chatty_name .. " is bored and wants to go wandering")
     send_spider_wandering(spidertron)
     ::next_spidertron::
   end
@@ -415,6 +417,7 @@ local function relink_following_spiders(player)
       global.following_spiders[player.index][unit_number] = nil
     end
   end
+  chatty_print(get_chatty_name(player.character) .. " following spiders relinked")
 end
 
 ---@param event EventData.on_player_driving_changed_state
@@ -522,6 +525,7 @@ local function on_built_entity(event)
   local spidertron = event.created_entity
   if not spidertron.entity_label then
     spidertron.entity_label = random_backer_name()
+    chatty_print(get_chatty_name(spidertron) .. " given a backer_name")
   end
   add_spider(spidertron)
   set_last_interacted_tick(spidertron)
