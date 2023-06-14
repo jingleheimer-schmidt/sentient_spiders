@@ -152,7 +152,7 @@ end
 local function set_player_initiated_movement(spidertron, value)
   global.player_initiated_movement = global.player_initiated_movement or {} ---@type table<uint, boolean>
   global.player_initiated_movement[spidertron.unit_number] = value
-  chatty_print(get_chatty_name(spidertron) .. " player_initiated_movement set to [" .. value .. "]")
+  chatty_print(get_chatty_name(spidertron) .. " player_initiated_movement set to [" .. serpent.line(value) .. "]")
 end
 
 ---@param spidertron LuaEntity
