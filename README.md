@@ -13,11 +13,12 @@ Stuck spidertrons try to find another path to their destination.
 ---------------------
 # Features
 
-- When a player exits a spidertron, the spidertron will automatically follow the player.
-- When a player enters a vehicle, any spidertrons following the player will automatically follow the vehicle.
-- When a spidertron is not following anything, it will wander around inspecting the factory.
+- When a player exits a spidertron, the spidertron will follow the player.
+- When a player enters a vehicle, any spidertrons following the player will follow the vehicle.
+- Spidertrons that were following a player that changed surfaces will re-follow the player on return to the surface
+- When a spidertron is not following anything, it will wander around inspecting the factory (see FAQ for conditions).
 - When a spidertron is stuck trying to reach a wayponit, it will attempt to modify its own path to find a way around the obstacle.
-- Includes an interface so that other mods can add their spidertrons to the ignore list if desired.
+- Unnamed spidertrons are given a random backer name when built
 - Want a little more info? Check out the [FAQ tab](https://mods.factorio.com/mod/sentient_spiders/faq) for specific details on how the mod works and what it does.
 
 ---------------------
