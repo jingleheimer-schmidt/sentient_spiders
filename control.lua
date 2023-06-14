@@ -194,18 +194,15 @@ local function nudge_spidertron(spidertron)
   local autopilot_destinations = spidertron.autopilot_destinations
   local destination_count = #autopilot_destinations
   chatty_print("nudging spidertron")
+  local non_colliding_position = spidertron.surface.find_tiles_filtered({
+    position = spidertron.position,
+    radius = 15,
+    collision_mask = { "water-tile" },
+    invert = true,
+    limit = 1,
+  })
+  local new_position = non_colliding_position and non_colliding_position[1] and non_colliding_position[1].position or random_position_in_radius(spidertron.position, 50)
   if destination_count >= 1 then
-    local random_position = random_position_in_radius(spidertron.position, 50)
-    -- local legs = spidertron.get_spider_legs()
-    -- local non_colliding_position = spidertron.surface.find_non_colliding_position(legs[1].name, random_position, 50, 0.25)
-    local non_colliding_position = spidertron.surface.find_tiles_filtered({
-      position = spidertron.position,
-      radius = 15,
-      collision_mask = { "water-tile" },
-      invert = true,
-      limit = 1,
-    })
-    local new_position = non_colliding_position and non_colliding_position[1] and non_colliding_position[1].position or random_position
     if destination_count > 1 then
       autopilot_destinations[1] = new_position
     else
@@ -218,10 +215,8 @@ local function nudge_spidertron(spidertron)
     end
     chatty_print("Spidertron re-requested a path to the destination")
   else
-    local random_position = random_position_in_radius(spidertron.position, 15)
-    spidertron.add_autopilot_destination(random_position)
-    -- remote.call("SpidertronEnhancementsInternal-pf", "use-remote", spidertron, random_position)
     chatty_print("Spidertron requested a path to a nearby random position")
+    spidertron.add_autopilot_destination(new_position)
   end
 end
 
