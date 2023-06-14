@@ -212,7 +212,7 @@ local function nudge_spidertron(spidertron)
     else
       table.insert(autopilot_destinations, 1, new_position)
     end
-    request_spider_path(spidertron, new_position, autopilot_destinations[#autopilot_destinations], spidertron.force, 10, -3, nil, true)
+    request_spider_path(spidertron, new_position, autopilot_destinations[#autopilot_destinations], spidertron.force, 10, -4, nil, true)
     spidertron.autopilot_destination = nil
     for _, destination in pairs(autopilot_destinations) do
       spidertron.add_autopilot_destination(destination)
