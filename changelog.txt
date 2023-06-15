@@ -3,6 +3,7 @@ Version: 0.0.3
 Date: 13JUN2023
   Changes:
     - spidertrons won't wander if they were interacted with or reached a destination a player sent them to within the last 5 minutes
+    - improved pathfinding for stuck spidertrons so they are much more likely to find a path to their destination
     - updated readme (mod portal description) and faq
   Features:
     - unnamed spidertrons are given a random backer_name when built
