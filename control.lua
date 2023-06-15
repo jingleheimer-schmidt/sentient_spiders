@@ -411,6 +411,7 @@ local function relink_following_spiders(player)
       if follow_target then
         spidertron.follow_target = follow_target
       end
+      set_last_interacted_tick(spidertron)
     else
       global.following_spiders[player.index][unit_number] = nil
     end
