@@ -2,7 +2,8 @@
 - Every second, there is a 2% chance that an idle spidertron will wander off to a different part of the factory. A spidertron is considered idle if all of the following conditions are true:
   - the spidertron is not moving, not following a target, and has no active robots
   - the driver (if any) has been afk for more than 5 minutes
-  - the spidertron arrived at a position that a player sent it to (if any) more than 5 minutes ago
+  - the spidertron has not been interacted with for more than 5 minutes
+  - the spidertron has been waiting at a player-issued waypoint for more than 5 minutes
 
 # Q: How does a spidertron decide where to wander?
 - Spidertrons choose a random location between 100 and 500 tiles away from their current location. If there is a structure with the same force as the spidertron within 5 tiles of the location, they request a path to the structure. Otherwise they try again with up to 4 additional locations. If there are still no structures near any of the locations, they try again the following tick.
