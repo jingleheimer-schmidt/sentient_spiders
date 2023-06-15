@@ -13,10 +13,11 @@ Version: 0.0.2
 Date: 11JUN2023
   Changes:
     - spiders with players in them will only wander if the player has been afk for more than 5 minutes
-    - fixed ignoring spiders that were registered on the ignore list after this mod registered them
-    - fixed changelog date for version 0.0.1
     - updated mod description
     - added faq file
+    - fixed changelog date for version 0.0.1
+  Bugfixes:
+    - fixed ignoring spiders that were registered on the ignore list after this mod registered them
 ---------------------------------------------------------------------------------------------------
 Version: 0.0.1
 Date: 05JUN2023
