@@ -1,14 +1,30 @@
 ---------------------------------------------------------------------------------------------------
+Version: 0.0.3
+Date: 13JUN2023
+  Changes:
+    - spidertrons won't wander if they were interacted with or reached a destination a player sent them to within the last 5 minutes
+    - improved pathfinding for stuck spidertrons so they are much more likely to find a path to their destination
+    - updated readme (mod portal description) and faq
+  Features:
+    - unnamed spidertrons are given a random backer_name when built
+    - spidertrons continue to follow players who return to a surface
+---------------------------------------------------------------------------------------------------
 Version: 0.0.2
 Date: 11JUN2023
   Changes:
     - spiders with players in them will only wander if the player has been afk for more than 5 minutes
-    - added support for ignoring spiders that were registered on the ignore list after this mod registered them
-    - fixed changelog date for version 0.0.1
     - updated mod description
     - added faq file
+    - fixed changelog date for version 0.0.1
+  Bugfixes:
+    - fixed ignoring spiders that were registered on the ignore list after this mod registered them
 ---------------------------------------------------------------------------------------------------
 Version: 0.0.1
 Date: 05JUN2023
   Changes:
     - initial release on the mod portal
+  Features:
+    - spidertrons automatically follow their last driver
+    - spidertrons continue to follow players who enter or exit vehicles
+    - idle spidertrons wander around the factory
+    - stuck spidertrons try to find another path to their destination

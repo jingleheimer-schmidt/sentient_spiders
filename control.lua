@@ -1,32 +1,37 @@
 
 --[[ factorio mod sentient spiders control script created by asher_sky --]]
 
-local ignored_entity_types = {
-  ["straight-rail"] = true,
-  ["curved-rail"] = true,
-  ["electric-pole"] = true,
-  ["radar"] = true,
-  ['rail-signal'] = true,
-  ['rail-chain-signal'] = true,
-  ['wall'] = true,
-  ['gate'] = true,
-  ['car'] = true,
-  ['locomotive'] = true,
-  ['cargo-wagon'] = true,
-  ['fluid-wagon'] = true,
-  ['artillery-wagon'] = true,
-  ['artillery-turret'] = true,
-  ["unit"] = true,
-  ["turret"] = true,
-  ["unit-spawner"] = true,
-}
+local ignored_entity_types = require("ignored_entity_types")
 
 ---@param message string
 local function chatty_print(message)
   global.chatty_print = false
   -- global.chatty_print = true
   if not global.chatty_print then return end
-  game.print("[" .. game.tick .. "]" .. message)
+  game.print("[" .. game.tick .. "] " .. message)
+end
+
+---@param entity LuaEntity?
+---@return string
+local function get_chatty_name(entity)
+  if not entity then return "" end
+  local id = entity.entity_label or entity.backer_name or entity.unit_number or script.register_on_entity_destroyed(entity)
+  if entity.type == "character" and entity.player then
+    id = entity.player.name
+  end
+  local name = entity.name .. " " .. id
+  local color = entity.color
+  if color then
+    name = "[color=" .. color.r .. "," .. color.g .. "," .. color.b .. "]" .. name .. "[/color]"
+  end
+  return "[" .. name .. "]"
+end
+
+---@param entity LuaEntity|MapPosition|TilePosition
+---@return string
+local function get_chatty_position(entity)
+  local position = serpent.line(entity.position or entity)
+  return position
 end
 
 ---@param spidertron LuaEntity
@@ -90,7 +95,8 @@ end
 ---@param path_resolution_modifier number
 ---@param entity_to_ignore LuaEntity?
 ---@param spider_was_stuck boolean?
-local function request_spider_path(spidertron, start_position, goal_position, force, radius, path_resolution_modifier, entity_to_ignore, spider_was_stuck)
+---@param goal_entity LuaEntity?
+local function request_spider_path(spidertron, start_position, goal_position, force, radius, path_resolution_modifier, entity_to_ignore, spider_was_stuck, goal_entity)
   local request_path_id = spidertron.surface.request_path{
     bounding_box = { { -0.01, -0.01 }, { 0.01, 0.01 } },
     collision_mask = { "water-tile", "colliding-with-tiles-only", "consider-tile-transitions" },
@@ -112,7 +118,7 @@ local function request_spider_path(spidertron, start_position, goal_position, fo
     resolution = -3,
     spider_was_stuck = spider_was_stuck,
   }
-  chatty_print("Spidertron requested a path to the entity")
+  chatty_print(get_chatty_name(spidertron) .. " requested a path to " .. get_chatty_name(goal_entity) .. " " .. serpent.line(goal_position))
 end
 
 ---@param spidertron LuaEntity
@@ -128,12 +134,42 @@ local function spider_has_active_bots(spidertron)
 end
 
 ---@param spidertron LuaEntity
+local function set_last_interacted_tick(spidertron)
+  global.last_interacted_tick = global.last_interacted_tick or {} ---@type table<uint, uint>
+  global.last_interacted_tick[spidertron.unit_number] = game.tick
+  chatty_print(get_chatty_name(spidertron) .. " last_interacted_tick set to [" .. game.tick .. "]")
+end
+
+---@param spidertron LuaEntity
+---@return uint
+local function get_last_interacted_tick(spidertron)
+  global.last_interacted_tick = global.last_interacted_tick or {}
+  return global.last_interacted_tick[spidertron.unit_number] or 0
+end
+
+---@param spidertron LuaEntity
+---@param value boolean
+local function set_player_initiated_movement(spidertron, value)
+  global.player_initiated_movement = global.player_initiated_movement or {} ---@type table<uint, boolean>
+  global.player_initiated_movement[spidertron.unit_number] = value
+  chatty_print(get_chatty_name(spidertron) .. " player_initiated_movement set to [" .. serpent.line(value) .. "]")
+end
+
+---@param spidertron LuaEntity
+---@return boolean
+local function get_player_initiated_movement(spidertron)
+  global.player_initiated_movement = global.player_initiated_movement or {}
+  return global.player_initiated_movement[spidertron.unit_number]
+end
+
+---@param spidertron LuaEntity
 local function send_spider_wandering(spidertron)
   local surface = spidertron.surface
   local position = spidertron.position
+  local chatty_name = get_chatty_name(spidertron)
   local player_built_entities = {}
   for i = 1, 5 do
-    if player_built_entities[1] then break end
+    if player_built_entities[1] and not ignored_entity_types[player_built_entities[1].type] then break end
     local wander_position = random_position_within_range(position, 100, 500)
     local find_entities_filter = { ---@type LuaSurface.find_entities_filtered_param
       force = spidertron.force,
@@ -146,51 +182,51 @@ local function send_spider_wandering(spidertron)
   end
   local entity = player_built_entities[1]
   local unit_number = spidertron.unit_number --[[@as uint]]
-  global.try_again_next_tick = global.try_again_next_tick or {}
+  global.try_again_next_tick = global.try_again_next_tick or {} ---@type table<uint, LuaEntity?>
   if not entity then
     global.try_again_next_tick[unit_number] = spidertron
+    chatty_print(chatty_name .. " did not find a wander target")
     return
   else
     global.try_again_next_tick[unit_number] = nil
   end
-  chatty_print("Spidertron found a player built entity to wander to")
-  if ignored_entity_types[entity.type] then return end
-  request_spider_path(spidertron, spidertron.position, entity.position, spidertron.force, 10, -4)
+  chatty_print(chatty_name .. " found a wander target: " .. get_chatty_name(entity))
+  request_spider_path(spidertron, spidertron.position, entity.position, spidertron.force, 10, -4, nil, nil, entity)
 end
 
 ---@param spidertron LuaEntity
 local function nudge_spidertron(spidertron)
   local autopilot_destinations = spidertron.autopilot_destinations
   local destination_count = #autopilot_destinations
-  chatty_print("nudging spidertron")
-  if destination_count >= 1 then
-    local random_position = random_position_in_radius(spidertron.position, 50)
-    local legs = spidertron.get_spider_legs()
-    -- local non_colliding_position = spidertron.surface.find_non_colliding_position(legs[1].name, random_position, 50, 0.25)
+  local new_position = nil
+  for i = 1, 5 do
+    if new_position then break end
+    local nearby_position = random_position_within_range(spidertron.position, 25, 50)
     local non_colliding_position = spidertron.surface.find_tiles_filtered({
-      position = spidertron.position,
-      radius = 15,
+      position = nearby_position,
+      radius = 10,
       collision_mask = { "water-tile" },
       invert = true,
       limit = 1,
     })
-    local new_position = non_colliding_position and non_colliding_position[1] and non_colliding_position[1].position or random_position
+    new_position = non_colliding_position and non_colliding_position[1] and non_colliding_position[1].position
+  end
+  -- local new_position = non_colliding_position and non_colliding_position[1] and non_colliding_position[1].position or nearby_position
+  new_position = new_position or random_position_within_range(spidertron.position, 10, 30)
+  chatty_print(get_chatty_name(spidertron) .. " is stuck. autopilot re-routed via " .. get_chatty_position(new_position))
+  if destination_count >= 1 then
     if destination_count > 1 then
       autopilot_destinations[1] = new_position
     else
       table.insert(autopilot_destinations, 1, new_position)
     end
-    request_spider_path(spidertron, new_position, autopilot_destinations[#autopilot_destinations], spidertron.force, 10, -3, nil, true)
+    request_spider_path(spidertron, new_position, autopilot_destinations[#autopilot_destinations], spidertron.force, 10, -4, nil, true)
     spidertron.autopilot_destination = nil
     for _, destination in pairs(autopilot_destinations) do
       spidertron.add_autopilot_destination(destination)
     end
-    chatty_print("Spidertron re-requested a path to the destination")
   else
-    local random_position = random_position_in_radius(spidertron.position, 15)
-    spidertron.add_autopilot_destination(random_position)
-    -- remote.call("SpidertronEnhancementsInternal-pf", "use-remote", spidertron, random_position)
-    chatty_print("Spidertron requested a path to a nearby random position")
+    spidertron.add_autopilot_destination(new_position)
   end
 end
 
@@ -198,23 +234,22 @@ end
 local function on_script_path_request_finished(event)
   global.request_path_ids = global.request_path_ids or {}
   if not global.request_path_ids[event.id] then return end
-  chatty_print("Spidertron path request finished")
   local path = event.path
   local path_request_data = global.request_path_ids[event.id]
   local spidertron = path_request_data.spidertron
-  local resolution = path_request_data.resolution
+  local chatty_name = get_chatty_name(spidertron)
+  -- local resolution = path_request_data.resolution
   local spider_was_stuck = path_request_data.spider_was_stuck
   if not spidertron and spidertron.valid then
-    chatty_print("invalid spider")
     goto cleanup
   end
   if event.try_again_later then
-    chatty_print("try again later")
+    chatty_print(chatty_name .. " received [[color=yellow]try_again_later[/color]] signal from pathfinder")
     goto cleanup
   end
   if ((spidertron.speed > 0) and not spider_was_stuck) then goto cleanup end
   if not path then
-    chatty_print("no path")
+    chatty_print(chatty_name .. " received [[color=red]no_path[/color]] signal from pathfinder")
     if spidertron.speed == 0 then
       nudge_spidertron(spidertron)
     end
@@ -224,49 +259,49 @@ local function on_script_path_request_finished(event)
   for _, waypoint in ipairs(path) do
     spidertron.add_autopilot_destination(waypoint.position)
   end
-  chatty_print("Spidertron wander path memorized")
+  chatty_print(chatty_name .. " received path data from request [" .. event.id .. "]")
   ::cleanup::
   global.request_path_ids[event.id] = nil
+end
+
+---@param spidertron LuaEntity
+---@return boolean
+local function spidertron_is_idle(spidertron)
+  local ignored_spidertrons = global.ignored_spidertrons or {}
+  if ignored_spidertrons[spidertron.name] then return false end
+  if spidertron.speed ~= 0 then return false end
+  if spidertron.follow_target then return false end
+  if spider_has_active_bots(spidertron) then return false end
+  return true
 end
 
 -- on_nth_tick check if any spidertrons are bored and want to go off wandering
 ---@param event NthTickEventData
 local function on_nth_tick(event)
-  chatty_print("on_nth_tick")
-  local ignored_spidertrons = global.ignored_spidertrons or {}
   for destruction_id, spidertron in pairs(global.spidertrons) do
     if not spidertron.valid then
       global.spidertrons[destruction_id] = nil
       goto next_spidertron
     end
-    if ignored_spidertrons[spidertron.name] then
-      chatty_print("ignored_spidertrons")
+    if not spidertron_is_idle(spidertron) then
       goto next_spidertron
     end
-    if spidertron.speed ~= 0 then
-      chatty_print("speed ~= 0")
-      goto next_spidertron
-    end
-    if spidertron.follow_target then
-      chatty_print("follow_target")
-      goto next_spidertron
-    end
-    if spider_has_active_bots(spidertron) then goto next_spidertron end
     if spidertron.autopilot_destinations[1] then
       nudge_spidertron(spidertron)
-      chatty_print("destinations[1]")
       goto next_spidertron
     end
-    local chance = math.random(100)
-    if (chance < 99) then goto next_spidertron end
-    local driver, passenger = spidertron.get_driver(), spidertron.get_passenger()
-    if driver or passenger then
-      chatty_print("driver or passenger")
-      local knower = driver or passenger
-      local player = knower and knower.type == "character" and knower.player or knower and knower.type == "player" and knower
-      if player and player.afk_time and player.afk_time < 60 * 60 * 5 then goto next_spidertron end
+    local rider = spidertron.get_driver() or spidertron.get_passenger()
+    local player = rider and rider.type == "character" and rider.player or rider and rider.type == "player" and rider
+    if player and player.afk_time and player.afk_time < 60 * 60 * 5 then
+      goto next_spidertron
     end
-    chatty_print("Spidertron is bored and wants to go wandering")
+    if get_last_interacted_tick(spidertron) + 60 * 60 * 5 > game.tick then
+      goto next_spidertron
+    end
+    if (math.random(100) < 99) then
+      goto next_spidertron
+    end
+    chatty_print(get_chatty_name(spidertron) .. " is bored and wants to go wandering")
     send_spider_wandering(spidertron)
     ::next_spidertron::
   end
@@ -307,6 +342,10 @@ local function on_spider_command_completed(event)
   local spidertron = event.vehicle
   local destinations = #spidertron.autopilot_destinations
   if destinations == 0 then
+    if get_player_initiated_movement(spidertron) then
+      set_last_interacted_tick(spidertron)
+      set_player_initiated_movement(spidertron, false)
+    end
     local find_entities_filter = { ---@type LuaSurface.find_entities_filtered_param
       force = spidertron.force,
       position = spidertron.position,
@@ -372,19 +411,22 @@ local function relink_following_spiders(player)
       if follow_target then
         spidertron.follow_target = follow_target
       end
+      set_last_interacted_tick(spidertron)
     else
       global.following_spiders[player.index][unit_number] = nil
     end
   end
+  chatty_print(get_chatty_name(player.character) .. " following spiders relinked")
 end
 
 ---@param event EventData.on_player_driving_changed_state
-local function update_player_followers(event)
+local function on_player_driving_changed_state(event)
   local player = game.get_player(event.player_index) --[[@as LuaPlayer]]
   global.ignored_spidertrons = global.ignored_spidertrons or {}
   global.following_spiders = global.following_spiders or {} --[[@type table<uint, table<uint, LuaEntity>>]]
   local spidertron = event.entity and event.entity.type == "spider-vehicle" and event.entity
   if spidertron then
+    set_last_interacted_tick(spidertron)
     local driver = spidertron.get_driver()
     local passenger = spidertron.get_passenger()
     if not driver and not passenger and not global.ignored_spidertrons[spidertron.name] then
@@ -392,11 +434,6 @@ local function update_player_followers(event)
     end
   end
   relink_following_spiders(player)
-end
-
----@param event EventData.on_player_driving_changed_state
-local function on_player_driving_changed_state(event)
-  update_player_followers(event)
 end
 
 ---@param entity LuaEntity
@@ -416,16 +453,26 @@ end
 ---@param event EventData.on_player_used_spider_remote
 local function on_player_used_spider_remote(event)
   if not event.success then return end
-  if event.vehicle.follow_target then
-    remove_following_spider(event.vehicle)
-    local is_character, player_index = entity_is_character(event.vehicle.follow_target)
+  local spidertron = event.vehicle
+  if spidertron.follow_target then
+    remove_following_spider(spidertron)
+    local is_character, player_index = entity_is_character(spidertron.follow_target)
     if is_character and player_index then
-      add_following_spider(game.get_player(player_index) --[[@as LuaPlayer]], event.vehicle)
+      add_following_spider(game.get_player(player_index) --[[@as LuaPlayer]], spidertron)
     end
   end
-  if event.vehicle.autopilot_destinations[1] then
-    remove_following_spider(event.vehicle)
+  if spidertron.autopilot_destinations[1] then
+    remove_following_spider(spidertron)
+    set_player_initiated_movement(spidertron, true)
   end
+  set_last_interacted_tick(spidertron)
+end
+
+---@param event EventData.on_player_changed_surface
+local function on_player_changed_surface(event)
+  local player = game.get_player(event.player_index)
+  if not player then return end
+  relink_following_spiders(player)
 end
 
 ---@param spidertron LuaEntity
@@ -458,11 +505,23 @@ local function initialize_globals()
   }
 end
 
+---@return string
+local function random_backer_name()
+  local backer_names = game.backer_names
+  local index = math.random(#backer_names)
+  return backer_names[index]
+end
+
 ---@param event EventData.on_built_entity | EventData.on_robot_built_entity
 local function on_built_entity(event)
   if event.created_entity.type ~= "spider-vehicle" then return end
   local spidertron = event.created_entity
+  if not spidertron.entity_label then
+    spidertron.entity_label = random_backer_name()
+    chatty_print(get_chatty_name(spidertron) .. " given a backer_name")
+  end
   add_spider(spidertron)
+  set_last_interacted_tick(spidertron)
 end
 
 ---@param event EventData.on_entity_destroyed
@@ -478,6 +537,7 @@ script.on_event(defines.events.on_tick, on_tick)
 script.on_event(defines.events.on_built_entity, on_built_entity)
 script.on_event(defines.events.on_robot_built_entity, on_built_entity)
 script.on_event(defines.events.on_entity_destroyed, on_entity_destroyed)
+script.on_event(defines.events.on_player_changed_surface, on_player_changed_surface)
 script.on_event(defines.events.on_spider_command_completed, on_spider_command_completed)
 script.on_event(defines.events.on_script_path_request_finished, on_script_path_request_finished)
 script.on_event(defines.events.on_player_driving_changed_state, on_player_driving_changed_state)
