@@ -112,7 +112,8 @@ local function request_spider_path(spidertron, start_position, goal_position, fo
   ---@field spidertron LuaEntity
   ---@field resolution number
   ---@field spider_was_stuck boolean?
-  storage.request_path_ids = storage.request_path_ids or {} ---@type table<uint, PathRequestData>
+  ---@type table<UnitNumber, PathRequestData>
+  storage.request_path_ids = storage.request_path_ids or {}
   storage.request_path_ids[request_path_id] = {
     spidertron = spidertron,
     resolution = -3,
@@ -135,7 +136,8 @@ end
 
 ---@param spidertron LuaEntity
 local function set_last_interacted_tick(spidertron)
-  storage.last_interacted_tick = storage.last_interacted_tick or {} ---@type table<uint, uint>
+  ---@type table<UnitNumber, uint>
+  storage.last_interacted_tick = storage.last_interacted_tick or {}
   storage.last_interacted_tick[spidertron.unit_number] = game.tick
   chatty_print(get_chatty_name(spidertron) .. " last_interacted_tick set to [" .. game.tick .. "]")
 end
@@ -150,7 +152,8 @@ end
 ---@param spidertron LuaEntity
 ---@param value boolean
 local function set_player_initiated_movement(spidertron, value)
-  storage.player_initiated_movement = storage.player_initiated_movement or {} ---@type table<uint, boolean>
+  ---@type table<UnitNumber, boolean>
+  storage.player_initiated_movement = storage.player_initiated_movement or {}
   storage.player_initiated_movement[spidertron.unit_number] = value
   chatty_print(get_chatty_name(spidertron) .. " player_initiated_movement set to [" .. serpent.line(value) .. "]")
 end
@@ -182,8 +185,10 @@ local function send_spider_wandering(spidertron)
     player_built_entities = surface.find_entities_filtered(find_entities_filter)
   end
   local entity = player_built_entities[1]
-  local unit_number = spidertron.unit_number --[[@as uint]]
-  storage.try_again_next_tick = storage.try_again_next_tick or {} ---@type table<uint, LuaEntity?>
+  local unit_number = spidertron.unit_number
+  if not unit_number then return end
+  ---@type table<UnitNumber, LuaEntity>
+  storage.try_again_next_tick = storage.try_again_next_tick or {}
   if not entity then
     storage.try_again_next_tick[unit_number] = spidertron
     chatty_print(chatty_name .. " did not find a wander target")
