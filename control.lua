@@ -208,13 +208,13 @@ local function nudge_spidertron(spidertron)
   for i = 1, 5 do
     if new_position then break end
     local nearby_position = random_position_within_range(spidertron.position, 25, 50)
-    local non_colliding_position = spidertron.surface.find_tiles_filtered({
+    local non_colliding_position = spidertron.surface.find_tiles_filtered {
       position = nearby_position,
       radius = 10,
-      collision_mask = { "water-tile" },
+      collision_mask = { "water_tile" },
       invert = true,
       limit = 1,
-    })
+    }
     new_position = non_colliding_position and non_colliding_position[1] and non_colliding_position[1].position
   end
   -- local new_position = non_colliding_position and non_colliding_position[1] and non_colliding_position[1].position or nearby_position
@@ -515,6 +515,7 @@ local function initialize_globals()
       ::next_spidertron::
     end
   end
+  ---@type table<string, boolean>
   storage.ignored_spidertrons = {
     ["companion"] = true,
     ["constructron"] = true,
