@@ -90,7 +90,7 @@ end
 ---@param spidertron LuaEntity
 ---@param start_position MapPosition
 ---@param goal_position MapPosition
----@param force ForceIdentification
+---@param force ForceID
 ---@param radius number
 ---@param path_resolution_modifier number
 ---@param entity_to_ignore LuaEntity?
@@ -393,9 +393,13 @@ local function remove_following_spider(spidertron)
   end
 end
 
+---@alias PlayerIndex integer
+---@alias UnitNumber integer
+
 ---@param player LuaPlayer
 ---@param spidertron LuaEntity
 local function add_following_spider(player, spidertron)
+  ---@type table<PlayerIndex, table<UnitNumber, LuaEntity>>
   storage.following_spiders = storage.following_spiders or {}
   storage.following_spiders[player.index] = storage.following_spiders[player.index] or {}
   storage.following_spiders[player.index][spidertron.unit_number] = spidertron
@@ -421,9 +425,10 @@ end
 
 ---@param event EventData.on_player_driving_changed_state
 local function on_player_driving_changed_state(event)
-  local player = game.get_player(event.player_index) --[[@as LuaPlayer]]
+  local player = game.get_player(event.player_index)
+  if not (player and player.valid) then return end
   storage.ignored_spidertrons = storage.ignored_spidertrons or {}
-  storage.following_spiders = storage.following_spiders or {} --[[@type table<uint, table<uint, LuaEntity>>]]
+  storage.following_spiders = storage.following_spiders or {}
   local spidertron = event.entity and event.entity.type == "spider-vehicle" and event.entity
   if spidertron then
     set_last_interacted_tick(spidertron)
