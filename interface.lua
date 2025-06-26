@@ -6,8 +6,8 @@
 
 ---@param name string
 local function ignore_spider(name)
-    global.ignored_spidertrons = global.ignored_spidertrons or {}
-    global.ignored_spidertrons[name] = true
+    storage.ignored_spidertrons = storage.ignored_spidertrons or {}
+    storage.ignored_spidertrons[name] = true
 end
 
 local interface_functions = {
