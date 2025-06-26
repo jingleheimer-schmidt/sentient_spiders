@@ -171,7 +171,8 @@ local function send_spider_wandering(spidertron)
   for i = 1, 5 do
     if player_built_entities[1] and not ignored_entity_types[player_built_entities[1].type] then break end
     local wander_position = random_position_within_range(position, 100, 500)
-    local find_entities_filter = { ---@type LuaSurface.find_entities_filtered_param
+    ---@type EntitySearchFilters
+    local find_entities_filter = {
       force = spidertron.force,
       position = wander_position,
       radius = 5,
@@ -346,7 +347,8 @@ local function on_spider_command_completed(event)
       set_last_interacted_tick(spidertron)
       set_player_initiated_movement(spidertron, false)
     end
-    local find_entities_filter = { ---@type LuaSurface.find_entities_filtered_param
+    ---@type EntitySearchFilters
+    local find_entities_filter = {
       force = spidertron.force,
       position = spidertron.position,
       radius = 5,
