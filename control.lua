@@ -15,7 +15,7 @@ end
 ---@return string
 local function get_chatty_name(entity)
   if not entity then return "" end
-  local id = entity.entity_label or entity.backer_name or entity.unit_number or script.register_on_entity_destroyed(entity)
+  local id = entity.entity_label or entity.backer_name or entity.unit_number or script.register_on_object_destroyed(entity)
   if entity.type == "character" and entity.player then
     id = entity.player.name
   end
@@ -278,9 +278,9 @@ end
 -- on_nth_tick check if any spidertrons are bored and want to go off wandering
 ---@param event NthTickEventData
 local function on_nth_tick(event)
-  for destruction_id, spidertron in pairs(storage.spidertrons) do
+  for registration_number, spidertron in pairs(storage.spidertrons) do
     if not spidertron.valid then
-      storage.spidertrons[destruction_id] = nil
+      storage.spidertrons[registration_number] = nil
       goto next_spidertron
     end
     if not spidertron_is_idle(spidertron) then
@@ -479,9 +479,10 @@ end
 local function add_spider(spidertron)
   storage.ignored_spidertrons = storage.ignored_spidertrons or {}
   if storage.ignored_spidertrons[spidertron.name] then return end
-  local destruction_id = script.register_on_entity_destroyed(spidertron)
-  storage.spidertrons = storage.spidertrons or {} ---@type table<uint64, LuaEntity>
-  storage.spidertrons[destruction_id] = spidertron
+  local registration_number = script.register_on_object_destroyed(spidertron)
+  ---@type table<uint64, LuaEntity>
+  storage.spidertrons = storage.spidertrons or {}
+  storage.spidertrons[registration_number] = spidertron
 end
 
 ---@param registration_number uint64
@@ -524,8 +525,8 @@ local function on_built_entity(event)
   set_last_interacted_tick(spidertron)
 end
 
----@param event EventData.on_entity_destroyed
-local function on_entity_destroyed(event)
+---@param event EventData.on_object_destroyed
+local function on_object_destroyed(event)
   remove_spider(event.registration_number)
 end
 
@@ -536,7 +537,7 @@ script.on_nth_tick(60, on_nth_tick)
 script.on_event(defines.events.on_tick, on_tick)
 script.on_event(defines.events.on_built_entity, on_built_entity)
 script.on_event(defines.events.on_robot_built_entity, on_built_entity)
-script.on_event(defines.events.on_entity_destroyed, on_entity_destroyed)
+script.on_event(defines.events.on_object_destroyed, on_object_destroyed)
 script.on_event(defines.events.on_player_changed_surface, on_player_changed_surface)
 script.on_event(defines.events.on_spider_command_completed, on_spider_command_completed)
 script.on_event(defines.events.on_script_path_request_finished, on_script_path_request_finished)
