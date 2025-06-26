@@ -520,8 +520,8 @@ end
 
 ---@param event EventData.on_built_entity | EventData.on_robot_built_entity
 local function on_built_entity(event)
-  if event.created_entity.type ~= "spider-vehicle" then return end
-  local spidertron = event.created_entity
+  if event.entity.type ~= "spider-vehicle" then return end
+  local spidertron = event.entity
   if not spidertron.entity_label then
     spidertron.entity_label = random_backer_name()
     chatty_print(get_chatty_name(spidertron) .. " given a backer_name")
