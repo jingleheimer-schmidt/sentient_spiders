@@ -5,9 +5,9 @@ local ignored_entity_types = require("ignored_entity_types")
 
 ---@param message string
 local function chatty_print(message)
-  global.chatty_print = false
-  -- global.chatty_print = true
-  if not global.chatty_print then return end
+  storage.chatty_print = false
+  -- storage.chatty_print = true
+  if not storage.chatty_print then return end
   game.print("[" .. game.tick .. "] " .. message)
 end
 
@@ -40,8 +40,8 @@ local function spider_speak(spidertron, message)
   local manual_override = true
   if manual_override then return end
   if math.random() > 0.5 then return end
-  global.ignored_spidertrons = global.ignored_spidertrons or {}
-  if global.ignored_spidertrons[spidertron.name] then return end
+  storage.ignored_spidertrons = storage.ignored_spidertrons or {}
+  if storage.ignored_spidertrons[spidertron.name] then return end
   local visible_to_players = {}
   for _, player in pairs(game.connected_players) do
     table.insert(visible_to_players, player.name)
@@ -112,8 +112,8 @@ local function request_spider_path(spidertron, start_position, goal_position, fo
   ---@field spidertron LuaEntity
   ---@field resolution number
   ---@field spider_was_stuck boolean?
-  global.request_path_ids = global.request_path_ids or {} ---@type table<uint, PathRequestData>
-  global.request_path_ids[request_path_id] = {
+  storage.request_path_ids = storage.request_path_ids or {} ---@type table<uint, PathRequestData>
+  storage.request_path_ids[request_path_id] = {
     spidertron = spidertron,
     resolution = -3,
     spider_was_stuck = spider_was_stuck,
@@ -135,31 +135,31 @@ end
 
 ---@param spidertron LuaEntity
 local function set_last_interacted_tick(spidertron)
-  global.last_interacted_tick = global.last_interacted_tick or {} ---@type table<uint, uint>
-  global.last_interacted_tick[spidertron.unit_number] = game.tick
+  storage.last_interacted_tick = storage.last_interacted_tick or {} ---@type table<uint, uint>
+  storage.last_interacted_tick[spidertron.unit_number] = game.tick
   chatty_print(get_chatty_name(spidertron) .. " last_interacted_tick set to [" .. game.tick .. "]")
 end
 
 ---@param spidertron LuaEntity
 ---@return uint
 local function get_last_interacted_tick(spidertron)
-  global.last_interacted_tick = global.last_interacted_tick or {}
-  return global.last_interacted_tick[spidertron.unit_number] or 0
+  storage.last_interacted_tick = storage.last_interacted_tick or {}
+  return storage.last_interacted_tick[spidertron.unit_number] or 0
 end
 
 ---@param spidertron LuaEntity
 ---@param value boolean
 local function set_player_initiated_movement(spidertron, value)
-  global.player_initiated_movement = global.player_initiated_movement or {} ---@type table<uint, boolean>
-  global.player_initiated_movement[spidertron.unit_number] = value
+  storage.player_initiated_movement = storage.player_initiated_movement or {} ---@type table<uint, boolean>
+  storage.player_initiated_movement[spidertron.unit_number] = value
   chatty_print(get_chatty_name(spidertron) .. " player_initiated_movement set to [" .. serpent.line(value) .. "]")
 end
 
 ---@param spidertron LuaEntity
 ---@return boolean
 local function get_player_initiated_movement(spidertron)
-  global.player_initiated_movement = global.player_initiated_movement or {}
-  return global.player_initiated_movement[spidertron.unit_number]
+  storage.player_initiated_movement = storage.player_initiated_movement or {}
+  return storage.player_initiated_movement[spidertron.unit_number]
 end
 
 ---@param spidertron LuaEntity
@@ -182,13 +182,13 @@ local function send_spider_wandering(spidertron)
   end
   local entity = player_built_entities[1]
   local unit_number = spidertron.unit_number --[[@as uint]]
-  global.try_again_next_tick = global.try_again_next_tick or {} ---@type table<uint, LuaEntity?>
+  storage.try_again_next_tick = storage.try_again_next_tick or {} ---@type table<uint, LuaEntity?>
   if not entity then
-    global.try_again_next_tick[unit_number] = spidertron
+    storage.try_again_next_tick[unit_number] = spidertron
     chatty_print(chatty_name .. " did not find a wander target")
     return
   else
-    global.try_again_next_tick[unit_number] = nil
+    storage.try_again_next_tick[unit_number] = nil
   end
   chatty_print(chatty_name .. " found a wander target: " .. get_chatty_name(entity))
   request_spider_path(spidertron, spidertron.position, entity.position, spidertron.force, 10, -4, nil, nil, entity)
@@ -232,10 +232,10 @@ end
 
 ---@param event EventData.on_script_path_request_finished
 local function on_script_path_request_finished(event)
-  global.request_path_ids = global.request_path_ids or {}
-  if not global.request_path_ids[event.id] then return end
+  storage.request_path_ids = storage.request_path_ids or {}
+  if not storage.request_path_ids[event.id] then return end
   local path = event.path
-  local path_request_data = global.request_path_ids[event.id]
+  local path_request_data = storage.request_path_ids[event.id]
   local spidertron = path_request_data.spidertron
   local chatty_name = get_chatty_name(spidertron)
   -- local resolution = path_request_data.resolution
@@ -261,13 +261,13 @@ local function on_script_path_request_finished(event)
   end
   chatty_print(chatty_name .. " received path data from request [" .. event.id .. "]")
   ::cleanup::
-  global.request_path_ids[event.id] = nil
+  storage.request_path_ids[event.id] = nil
 end
 
 ---@param spidertron LuaEntity
 ---@return boolean
 local function spidertron_is_idle(spidertron)
-  local ignored_spidertrons = global.ignored_spidertrons or {}
+  local ignored_spidertrons = storage.ignored_spidertrons or {}
   if ignored_spidertrons[spidertron.name] then return false end
   if spidertron.speed ~= 0 then return false end
   if spidertron.follow_target then return false end
@@ -278,9 +278,9 @@ end
 -- on_nth_tick check if any spidertrons are bored and want to go off wandering
 ---@param event NthTickEventData
 local function on_nth_tick(event)
-  for destruction_id, spidertron in pairs(global.spidertrons) do
+  for destruction_id, spidertron in pairs(storage.spidertrons) do
     if not spidertron.valid then
-      global.spidertrons[destruction_id] = nil
+      storage.spidertrons[destruction_id] = nil
       goto next_spidertron
     end
     if not spidertron_is_idle(spidertron) then
@@ -370,10 +370,10 @@ end
 
 ---@param event EventData.on_tick
 local function on_tick(event)
-  global.try_again_next_tick = global.try_again_next_tick or {}
-  for id, spidertron in pairs(global.try_again_next_tick) do
+  storage.try_again_next_tick = storage.try_again_next_tick or {}
+  for id, spidertron in pairs(storage.try_again_next_tick) do
     if not spidertron.valid then
-      global.try_again_next_tick[id] = nil
+      storage.try_again_next_tick[id] = nil
       goto next_spidertron
     end
     send_spider_wandering(spidertron)
@@ -383,8 +383,8 @@ end
 
 ---@param spidertron LuaEntity
 local function remove_following_spider(spidertron)
-  global.following_spiders = global.following_spiders or {}
-  for player_index, following_spiders in pairs(global.following_spiders) do
+  storage.following_spiders = storage.following_spiders or {}
+  for player_index, following_spiders in pairs(storage.following_spiders) do
     for unit_number, following_spider in pairs(following_spiders) do
       if unit_number == spidertron.unit_number then
         following_spiders[unit_number] = nil
@@ -396,16 +396,16 @@ end
 ---@param player LuaPlayer
 ---@param spidertron LuaEntity
 local function add_following_spider(player, spidertron)
-  global.following_spiders = global.following_spiders or {}
-  global.following_spiders[player.index] = global.following_spiders[player.index] or {}
-  global.following_spiders[player.index][spidertron.unit_number] = spidertron
+  storage.following_spiders = storage.following_spiders or {}
+  storage.following_spiders[player.index] = storage.following_spiders[player.index] or {}
+  storage.following_spiders[player.index][spidertron.unit_number] = spidertron
 end
 
 ---@param player LuaPlayer
 local function relink_following_spiders(player)
-  global.following_spiders = global.following_spiders or {}
-  global.following_spiders[player.index] = global.following_spiders[player.index] or {}
-  for unit_number, spidertron in pairs(global.following_spiders[player.index]) do
+  storage.following_spiders = storage.following_spiders or {}
+  storage.following_spiders[player.index] = storage.following_spiders[player.index] or {}
+  for unit_number, spidertron in pairs(storage.following_spiders[player.index]) do
     if spidertron and spidertron.valid then
       local follow_target = player.character or player.vehicle
       if follow_target then
@@ -413,7 +413,7 @@ local function relink_following_spiders(player)
       end
       set_last_interacted_tick(spidertron)
     else
-      global.following_spiders[player.index][unit_number] = nil
+      storage.following_spiders[player.index][unit_number] = nil
     end
   end
   chatty_print(get_chatty_name(player.character) .. " following spiders relinked")
@@ -422,14 +422,14 @@ end
 ---@param event EventData.on_player_driving_changed_state
 local function on_player_driving_changed_state(event)
   local player = game.get_player(event.player_index) --[[@as LuaPlayer]]
-  global.ignored_spidertrons = global.ignored_spidertrons or {}
-  global.following_spiders = global.following_spiders or {} --[[@type table<uint, table<uint, LuaEntity>>]]
+  storage.ignored_spidertrons = storage.ignored_spidertrons or {}
+  storage.following_spiders = storage.following_spiders or {} --[[@type table<uint, table<uint, LuaEntity>>]]
   local spidertron = event.entity and event.entity.type == "spider-vehicle" and event.entity
   if spidertron then
     set_last_interacted_tick(spidertron)
     local driver = spidertron.get_driver()
     local passenger = spidertron.get_passenger()
-    if not driver and not passenger and not global.ignored_spidertrons[spidertron.name] then
+    if not driver and not passenger and not storage.ignored_spidertrons[spidertron.name] then
       add_following_spider(player, spidertron)
     end
   end
@@ -477,21 +477,21 @@ end
 
 ---@param spidertron LuaEntity
 local function add_spider(spidertron)
-  global.ignored_spidertrons = global.ignored_spidertrons or {}
-  if global.ignored_spidertrons[spidertron.name] then return end
+  storage.ignored_spidertrons = storage.ignored_spidertrons or {}
+  if storage.ignored_spidertrons[spidertron.name] then return end
   local destruction_id = script.register_on_entity_destroyed(spidertron)
-  global.spidertrons = global.spidertrons or {} ---@type table<uint64, LuaEntity>
-  global.spidertrons[destruction_id] = spidertron
+  storage.spidertrons = storage.spidertrons or {} ---@type table<uint64, LuaEntity>
+  storage.spidertrons[destruction_id] = spidertron
 end
 
 ---@param registration_number uint64
 local function remove_spider(registration_number)
-  global.spidertrons = global.spidertrons or {}
-  global.spidertrons[registration_number] = nil
+  storage.spidertrons = storage.spidertrons or {}
+  storage.spidertrons[registration_number] = nil
 end
 
 local function initialize_globals()
-  global.spidertrons = {}
+  storage.spidertrons = {}
   for _, surface in pairs(game.surfaces) do
     for _, spidertron in pairs(surface.find_entities_filtered { type = "spider-vehicle" }) do
       if not spidertron and not spidertron.valid then goto next_spidertron end
@@ -499,7 +499,7 @@ local function initialize_globals()
       ::next_spidertron::
     end
   end
-  global.ignored_spidertrons = {
+  storage.ignored_spidertrons = {
     ["companion"] = true,
     ["constructron"] = true,
   }
