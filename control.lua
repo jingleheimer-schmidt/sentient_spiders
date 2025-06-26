@@ -455,22 +455,25 @@ local function entity_is_character(entity)
   return bool, player_index
 end
 
----@param event EventData.on_player_used_spider_remote
+---@param event EventData.on_player_used_spidertron_remote
 local function on_player_used_spider_remote(event)
-  if not event.success then return end
-  local spidertron = event.vehicle
-  if spidertron.follow_target then
-    remove_following_spider(spidertron)
-    local is_character, player_index = entity_is_character(spidertron.follow_target)
-    if is_character and player_index then
-      add_following_spider(game.get_player(player_index) --[[@as LuaPlayer]], spidertron)
+  local player = game.get_player(event.player_index)
+  if not (player and player.valid) then return end
+  local spidertrons = player.spidertron_remote_selection or {}
+  for _, spidertron in pairs(spidertrons) do
+    if spidertron.follow_target then
+      remove_following_spider(spidertron)
+      local is_character, player_index = entity_is_character(spidertron.follow_target)
+      if is_character and player_index then
+        add_following_spider(player, spidertron)
+      end
     end
+    if spidertron.autopilot_destinations[1] then
+      remove_following_spider(spidertron)
+      set_player_initiated_movement(spidertron, true)
+    end
+    set_last_interacted_tick(spidertron)
   end
-  if spidertron.autopilot_destinations[1] then
-    remove_following_spider(spidertron)
-    set_player_initiated_movement(spidertron, true)
-  end
-  set_last_interacted_tick(spidertron)
 end
 
 ---@param event EventData.on_player_changed_surface
@@ -547,4 +550,4 @@ script.on_event(defines.events.on_player_changed_surface, on_player_changed_surf
 script.on_event(defines.events.on_spider_command_completed, on_spider_command_completed)
 script.on_event(defines.events.on_script_path_request_finished, on_script_path_request_finished)
 script.on_event(defines.events.on_player_driving_changed_state, on_player_driving_changed_state)
-script.on_event(defines.events.on_player_used_spider_remote, on_player_used_spider_remote)
+script.on_event(defines.events.on_player_used_spidertron_remote, on_player_used_spider_remote)
