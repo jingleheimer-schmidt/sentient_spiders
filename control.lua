@@ -99,7 +99,7 @@ end
 local function request_spider_path(spidertron, start_position, goal_position, force, radius, path_resolution_modifier, entity_to_ignore, spider_was_stuck, goal_entity)
   local request_path_id = spidertron.surface.request_path{
     bounding_box = { { -0.01, -0.01 }, { 0.01, 0.01 } },
-    collision_mask = { "water-tile", "colliding-with-tiles-only", "consider-tile-transitions" },
+    collision_mask = { layers = { water_tile = true }, colliding_with_tiles_only = true, consider_tile_transitions = true },
     start = start_position,
     goal = goal_position,
     force = force,
