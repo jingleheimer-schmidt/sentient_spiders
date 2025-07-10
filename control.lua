@@ -8,7 +8,7 @@ local function chatty_print(message)
     storage.chatty_print = true
     -- storage.chatty_print = true
     if not storage.chatty_print then return end
-    game.print("[" .. game.tick .. "] " .. message)
+    game.print("[" .. game.tick .. "] " .. message, { sound = defines.print_sound.never })
 end
 
 ---@param entity LuaEntity?
