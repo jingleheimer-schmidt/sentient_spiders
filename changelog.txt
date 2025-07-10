@@ -1,6 +1,6 @@
 ---------------------------------------------------------------------------------------------------
 Version: 0.1.0
-Date: ????
+Date: 2025-07-10
   Changes:
     - updated for Factorio 2.0
     - enhanced the ignored entity types list
