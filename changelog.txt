@@ -1,4 +1,13 @@
 ---------------------------------------------------------------------------------------------------
+Version: 0.1.0
+Date: ????
+  Changes:
+    - updated for Factorio 2.0
+    - enhanced the ignored entity types list
+    - updated mod thumbnail
+  Features:
+    - spidertrons will gradually slightly modify their color over time
+---------------------------------------------------------------------------------------------------
 Version: 0.0.3
 Date: 13JUN2023
   Changes:
