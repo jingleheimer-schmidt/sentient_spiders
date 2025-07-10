@@ -9,6 +9,7 @@
 	"factorio_version": "2.0",
 	"package": {
 		"sync_portal_details": true,
-		"readme": "README.md"
+		"readme": "README.md",
+		"faq": "FAQ.md"
 	}
 }
