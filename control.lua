@@ -286,7 +286,7 @@ local function on_script_path_request_finished(event)
     local chatty_name = get_chatty_name(spidertron)
     -- local resolution = path_request_data.resolution
     local spider_was_stuck = path_request_data.spider_was_stuck
-    if not spidertron and spidertron.valid then
+    if not (spidertron and spidertron.valid) then
         goto cleanup
     end
     if event.try_again_later then
@@ -558,7 +558,7 @@ local function initialize_globals()
     storage.spidertrons = {}
     for _, surface in pairs(game.surfaces) do
         for _, spidertron in pairs(surface.find_entities_filtered { type = "spider-vehicle" }) do
-            if not spidertron and not spidertron.valid then goto next_spidertron end
+            if not (spidertron and spidertron.valid) then goto next_spidertron end
             add_spider(spidertron)
             ::next_spidertron::
         end
