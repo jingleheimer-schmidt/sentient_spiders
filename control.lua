@@ -197,41 +197,6 @@ local function get_player_initiated_movement(spidertron)
 end
 
 ---@param spidertron LuaEntity
-local function send_spider_wandering(spidertron)
-    local surface = spidertron.surface
-    local position = spidertron.position
-    local chatty_name = get_chatty_name(spidertron)
-    local player_built_entities = {}
-    for i = 1, 5 do
-        if player_built_entities[1] and not ignored_entity_types[player_built_entities[1].type] then break end
-        local wander_position = random_position_within_range(position, 100, 500)
-        ---@type EntitySearchFilters
-        local find_entities_filter = {
-            force = spidertron.force,
-            position = wander_position,
-            radius = 5,
-            -- to_be_deconstructed = false,
-            limit = 1,
-        }
-        player_built_entities = surface.find_entities_filtered(find_entities_filter)
-    end
-    local entity = player_built_entities[1]
-    local unit_number = spidertron.unit_number
-    if not unit_number then return end
-    ---@type table<UnitNumber, LuaEntity>
-    storage.try_again_next_tick = storage.try_again_next_tick or {}
-    if not entity then
-        storage.try_again_next_tick[unit_number] = spidertron
-        chatty_print(chatty_name .. " did not find a wander target")
-        return
-    else
-        storage.try_again_next_tick[unit_number] = nil
-    end
-    chatty_print(chatty_name .. " found a wander target: " .. get_chatty_name(entity))
-    request_spider_path(spidertron, spidertron.position, entity.position, spidertron.force, 10, -4, nil, nil, entity)
-end
-
----@param spidertron LuaEntity
 local function nudge_spidertron(spidertron)
     local autopilot_destinations = spidertron.autopilot_destinations
     local destination_count = #autopilot_destinations
@@ -266,6 +231,49 @@ local function nudge_spidertron(spidertron)
     else
         spidertron.add_autopilot_destination(new_position)
     end
+end
+
+---@param spidertron LuaEntity
+local function send_spider_wandering(spidertron)
+    local surface = spidertron.surface
+    local position = spidertron.position
+    local chatty_name = get_chatty_name(spidertron)
+    local entity
+    for i = 1, 10 do
+        local wander_position = random_position_within_range(position, 100, 750)
+        ---@type EntitySearchFilters
+        local find_entities_filter = {
+            force = spidertron.force,
+            position = wander_position,
+            radius = 15,
+            limit = 1,
+        }
+        local found = surface.find_entities_filtered(find_entities_filter)
+        local candidate = found[1]
+        if candidate and not ignored_entity_types[candidate.type] and candidate.last_user then
+            entity = candidate
+            break
+        end
+    end
+    local unit_number = spidertron.unit_number
+    if not unit_number then return end
+    ---@type table<UnitNumber, LuaEntity>
+    storage.try_again_next_tick = storage.try_again_next_tick or {}
+    if not entity then
+        if math.random() > 1 / 15 then
+            storage.try_again_next_tick[unit_number] = spidertron
+            -- chatty_print(chatty_name .. " did not find a wander target. trying again")
+        else
+            storage.try_again_next_tick[unit_number] = nil
+            chatty_print(chatty_name .. " did not find a wander target. giving up")
+            nudge_spidertron(spidertron)
+        end
+        return
+    else
+        storage.try_again_next_tick[unit_number] = nil
+    end
+    chatty_print(chatty_name .. " found a wander target: " .. get_chatty_name(entity))
+    request_spider_path(spidertron, spidertron.position, entity.position, spidertron.force, 10, -4, nil, nil, entity)
 end
 
 ---@param event EventData.on_script_path_request_finished
