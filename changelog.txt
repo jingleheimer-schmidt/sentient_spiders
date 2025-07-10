@@ -6,7 +6,7 @@ Date: ????
     - enhanced the ignored entity types list
     - updated mod thumbnail
   Features:
-    - spidertrons will gradually slighhtly modify their color over time
+    - spidertrons will gradually slightly modify their color over time
 ---------------------------------------------------------------------------------------------------
 Version: 0.0.3
 Date: 13JUN2023
