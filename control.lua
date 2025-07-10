@@ -418,6 +418,14 @@ local function on_tick(event)
         send_spider_wandering(spidertron)
         ::next_spidertron::
     end
+    for id, spidertron in pairs(storage.spidertrons) do
+        if not spidertron.valid then
+            storage.spidertrons[id] = nil
+            goto next_spidertron
+        end
+        spidertron.color = adjust_color(spidertron.color or random_color())
+        ::next_spidertron::
+    end
 end
 
 ---@param spidertron LuaEntity
@@ -567,6 +575,7 @@ local function on_built_entity(event)
     local spidertron = event.entity
     if not spidertron.entity_label then
         spidertron.entity_label = random_backer_name()
+        -- spidertron.color = random_color()
         chatty_print(get_chatty_name(spidertron) .. " given a backer_name")
     end
     add_spider(spidertron)
