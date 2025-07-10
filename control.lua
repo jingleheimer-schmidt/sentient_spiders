@@ -31,6 +31,12 @@ end
 ---@return string
 local function get_chatty_position(entity)
     local position = serpent.line(entity.position or entity)
+    -- if entity and entity.x and entity.y then
+    --     position = string.format("[gps=%.1f,%.1f]", entity.x, entity.y)
+    -- end
+    if entity and entity.position then
+        position = string.format("[gps=%.1f,%.1f,1,%s]", entity.position.x, entity.position.y, entity.surface and entity.surface.name or "")
+    end
     return position
 end
 
