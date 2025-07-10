@@ -563,11 +563,8 @@ local function initialize_globals()
             ::next_spidertron::
         end
     end
-    ---@type table<string, boolean>
-    storage.ignored_spidertrons = {
-        ["companion"] = true,
-        ["constructron"] = true,
-    }
+    remote.call("sentient-spiders", "ignore_spider", "companion")
+    remote.call("sentient-spiders", "ignore_spider", "constructron")
 end
 
 ---@return string
