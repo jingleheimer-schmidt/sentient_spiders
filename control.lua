@@ -337,7 +337,7 @@ local function on_nth_tick(event)
             goto next_spidertron
         end
         local rider = spidertron.get_driver() or spidertron.get_passenger()
-        local player = rider and rider.type == "character" and rider.player or rider and rider.type == "player" and rider
+        local player = rider and rider.is_player() and rider or rider and rider.type == "character" and rider.player
         if player and player.afk_time and player.afk_time < 60 * 60 * 5 then
             goto next_spidertron
         end
