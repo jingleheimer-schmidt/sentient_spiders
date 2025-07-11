@@ -57,11 +57,11 @@ local function adjust_color(color)
     local min, max = -1, 1
     local r, g, b, a = color.r * 255, color.g * 255, color.b * 255, color.a and color.a * 255 or 255
     return {
-        r = math.random() > 1 / 60 and r or math.min(math.max(r + math.random(min, max), 0), 255),
-        g = math.random() > 1 / 60 and g or math.min(math.max(g + math.random(min, max), 0), 255),
-        b = math.random() > 1 / 60 and b or math.min(math.max(b + math.random(min, max), 0), 255),
+        r = math.random() > 1 / 90 and r or math.min(math.max(r + math.random(min, max), 0), 255),
+        g = math.random() > 1 / 90 and g or math.min(math.max(g + math.random(min, max), 0), 255),
+        b = math.random() > 1 / 90 and b or math.min(math.max(b + math.random(min, max), 0), 255),
         a = a
-        -- a = math.random() > 1 / 60 and a or math.min(math.max(a + math.random(min, max), 0), 255),
+        -- a = math.random() > 1 / 90 and a or math.min(math.max(a + math.random(min, max), 0), 255),
     }
 end
 
