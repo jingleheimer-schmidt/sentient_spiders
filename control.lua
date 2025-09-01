@@ -207,7 +207,7 @@ local function nudge_spidertron(spidertron)
         local non_colliding_position = spidertron.surface.find_tiles_filtered {
             position = nearby_position,
             radius = 10,
-            collision_mask = { "water_tile" },
+            collision_mask = { "player" },
             invert = true,
             limit = 1,
         }
