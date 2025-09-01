@@ -266,7 +266,7 @@ local function send_spider_wandering(spidertron)
         else
             storage.try_again_next_tick[unit_number] = nil
             chatty_print(chatty_name .. " did not find a wander target. giving up")
-            nudge_spidertron(spidertron)
+            -- nudge_spidertron(spidertron)
         end
         return
     else

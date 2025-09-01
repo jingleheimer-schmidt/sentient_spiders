@@ -2,6 +2,7 @@
 Version: 0.1.2
 Date: ????
   Changes:
+    - removed nudge when no valid wander target is found
 ---------------------------------------------------------------------------------------------------
 Version: 0.1.1
 Date: 2025-07-11
