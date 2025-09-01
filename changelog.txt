@@ -1,6 +1,6 @@
 ---------------------------------------------------------------------------------------------------
 Version: 0.1.2
-Date: ????
+Date: 2025-09-01
   Changes:
     - removed nudge when no valid wander target is found
     - reworked nudge behavior to search for tiles the player doesn't collide with
