@@ -2,6 +2,11 @@
 --[[ factorio mod sentient spiders control script created by asher_sky --]]
 
 local ignored_entity_types = require("ignored_entity_types")
+local spider_speak_messages = require("spider_speak_messages")
+local idle_spider_speak_messages = spider_speak_messages.idle_spider_speak_messages
+local on_the_move_spider_speak_messages = spider_speak_messages.on_the_move_spider_speak_messages
+local specific_entity_spider_speak_messages = spider_speak_messages.specific_entity_spider_speak_messages
+local generic_spider_speak_messages = spider_speak_messages.generic_spider_speak_messages
 
 ---@param message string
 local function chatty_print(message)
@@ -353,36 +358,6 @@ local function on_nth_tick(event)
     end
 end
 
-local idle_spider_speak_messages = {
-    "I'm bored.",
-    "I'm bored. I'm bored. I'm bored.",
-    "I wonder what's over there?",
-}
-
-local on_the_move_spider_speak_messages = {
-    "I'm going on an adventure!",
-    "Almost there!",
-    "I'm on my way!",
-}
-
-local specific_entity_spider_speak_messages = {
-    ["accumulator"] = {
-        "Power looks good on you.",
-        "Accumulator is a funny word.",
-    },
-    ["transport-belt"] = {
-        "Look at all those belts!",
-    }
-}
-
-local generic_spider_speak_messages = {
-    "I'm a spider!",
-    "I'm a spider! I'm a spider! I'm a spider!",
-    "Ooooh pretty!",
-    "Please send help",
-    "Oh no... ",
-}
-
 ---@param event EventData.on_spider_command_completed
 local function on_spider_command_completed(event)
     local spidertron = event.vehicle
@@ -424,6 +399,7 @@ local function on_tick(event)
             goto next_spidertron
         end
         send_spider_wandering(spidertron)
+        spider_speak(spidertron, idle_spider_speak_messages[math.random(#idle_spider_speak_messages)])
         ::next_spidertron::
     end
     for id, spidertron in pairs(storage.spidertrons) do
