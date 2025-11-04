@@ -533,6 +533,14 @@ end
 local function remove_spider(registration_number)
     storage.spidertrons = storage.spidertrons or {}
     storage.spidertrons[registration_number] = nil
+    storage.last_finished_wandering_tick = storage.last_finished_wandering_tick or {}
+    storage.last_finished_wandering_tick[registration_number] = nil
+    storage.last_interacted_tick = storage.last_interacted_tick or {}
+    storage.last_interacted_tick[registration_number] = nil
+    storage.player_initiated_movement = storage.player_initiated_movement or {}
+    storage.player_initiated_movement[registration_number] = nil
+    storage.last_spider_speak = storage.last_spider_speak or {}
+    storage.last_spider_speak[registration_number] = nil
 end
 
 local function reset_stored_spiders()
