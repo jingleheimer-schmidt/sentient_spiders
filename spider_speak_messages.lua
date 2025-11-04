@@ -1,29 +1,24 @@
 
 local idle_spider_speak_messages = {
     "I'm bored.",
-    "I'm bored. I'm bored. I'm bored.",
     "I wonder what's over there?",
     "Nothing to click. Nothing to stomp.",
     "My legs are restless.",
-    "Tick... tick... tick... still nothing.",
-    "I could go for a nice patch of cliffs right now.",
     "Do spiders dream of electric belts?",
-    "Everything's quiet… too quiet.",
-    "I'll just stretch all eight legs again.",
-    "Any biters around? No? Figures.",
+    "Everything's quiet... too quiet.",
+    "I'll just stretch my legs again.",
+    "So... Any biters around?",
     "You know what I miss? Explosions.",
     "Idle state: existential.",
-    "Sometimes I think about the old map seed.",
     "My servos are humming to themselves.",
-    "You could… send me somewhere, maybe?",
-    "I counted my legs again. Still eight.",
+    "You could... send me somewhere, maybe?",
+    "I counted my legs again. They're all here.",
     "I could write poetry about pipes.",
     "The factory hum is nice background noise.",
-    "I'm practicing my idle animation. Nailed it.",
+    "I've been practicing my idle animation.",
     "Maybe I'll reorganize my leg priorities.",
-    "Just vibing in the tickstream.",
     "The void whispers: 'move'.",
-    "Standing by… indefinitely.",
+    "Standing by... indefinitely.",
     "What if I *am* the factory?",
 }
 
@@ -32,27 +27,29 @@ local on_the_move_spider_speak_messages = {
     "Almost there!",
     "I'm on my way!",
     "Eight legs make for quick work.",
-    "Zoom zoom—spider style.",
     "Pathfinding successful! For now.",
     "Hope I don't step on anything important.",
     "Marching order: stylish and efficient.",
-    "Watch those cliffs—oh wait, I don't care.",
-    "Travel speed: elegant scuttle.",
-    "Destination locked. Let's roll… or skitter.",
+    "Destination locked. Let's roll... or skitter.",
     "I love the sound of metal under my feet.",
     "Adventure mode: engaged!",
-    "Leg 1, leg 2, leg 3… all working perfectly.",
+    "Leg 1, leg 2, leg 3... all working perfectly.",
     "Navigating like a pro. Mostly.",
     "The terrain trembles at my graceful gait.",
     "I could outpace a logistic bot any day.",
-    "So many tiles, so little time.",
-    "I'm not lost. I'm… exploring.",
+    "I'm not lost. I'm... exploring.",
     "Path cleared, spirits high, servos warm!",
     "March of the spiders, opus 2.",
     "Route recalculated. I meant to do that.",
     "Wind in my servos, dust on my plating.",
-    "Destination confirmed. Legs: go brrrr.",
-    "Adventure? Movement? Same difference.",
+    "Destination confirmed.",
+}
+
+local generic_spider_speak_messages = {
+    "I'm a spider!",
+    "Ooooh pretty!",
+    "Please send help",
+    "Oh no... ",
 }
 
 local specific_entity_spider_speak_messages = {
@@ -61,7 +58,7 @@ local specific_entity_spider_speak_messages = {
         "Directions? I prefer eight legs of intuition.",
         "Arrows: the UI of the battlefield.",
         "If it points at me, I'm already gone.",
-        "Pointy glyph detected. Proceeding that way… maybe.",
+        "Pointy glyph detected. Proceeding that way... maybe.",
     },
     ["artillery-flare"] = {
         "Pretty spark. Incoming bonk from orbit?",
@@ -85,7 +82,7 @@ local specific_entity_spider_speak_messages = {
         "That line is not for crossing.",
     },
     ["character-corpse"] = {
-        "Respectful pause. Loot respectfully… quickly.",
+        "Respectful pause. Loot respectfully... quickly.",
         "Fallen friend. I'll carry the mission on my legs.",
         "A cautionary save reminder.",
         "May your respawn be swift.",
@@ -102,7 +99,7 @@ local specific_entity_spider_speak_messages = {
         "Biters to bits. Nature recycles.",
         "One less chew toy for my legs.",
         "Biomass acquired by the planet.",
-        "Scent of victory… and chitin.",
+        "Scent of victory... and chitin.",
         "Reminder: maintain perimeter.",
     },
     ["rail-remnants"] = {
@@ -183,7 +180,7 @@ local specific_entity_spider_speak_messages = {
         "Watch your head. And your crates.",
     },
     ["cargo-pod"] = {
-        "Fall from sky, bring me pie… or iron.",
+        "Fall from sky, bring me pie... or iron.",
         "Surprise box with momentum.",
         "Pod life: delivery deluxe.",
         "Contents may have shifted. Dramatically.",
@@ -264,7 +261,7 @@ local specific_entity_spider_speak_messages = {
         "Ground zero for up.",
         "We point, the planet sighs.",
         "Soon: loud, proud, cloud-bound.",
-        "Checklist time: 3…2…legs crossed.",
+        "Checklist time: 3...2...legs crossed.",
     },
     ["furnace"] = {
         "Rock bakery smells metallic.",
@@ -486,7 +483,7 @@ local specific_entity_spider_speak_messages = {
     ["thruster"] = {
         "Pushy fire tube.",
         "Direction: opposite of flame.",
-        "I'll stand… over there.",
+        "I'll stand... over there.",
         "Newton would be proud.",
         "Loud, bright, very convincing.",
     },
@@ -535,7 +532,7 @@ local specific_entity_spider_speak_messages = {
     ["transport-belt"] = {
         "Yellow carpets for tired items.",
         "My leg day, their ride day.",
-        "Conveyor lullaby: swish… swish…",
+        "Conveyor lullaby: swish... swish...",
         "Items enjoy the scenery.",
         "I pace them for fun.",
     },
@@ -558,7 +555,7 @@ local specific_entity_spider_speak_messages = {
         "Ambience object—10/10 vibes.",
         "Decor with destiny.",
         "Sometimes a rock is just a rock.",
-        "I won't step on it… much.",
+        "I won't step on it... much.",
     },
     ["explosion"] = {
         "Kaboom confirmed. Diagnostics: delightful.",
@@ -616,14 +613,6 @@ local specific_entity_spider_speak_messages = {
         "Text with altitude.",
         "Let's keep it constructive.",
     },
-}
-
-local generic_spider_speak_messages = {
-    "I'm a spider!",
-    "I'm a spider! I'm a spider! I'm a spider!",
-    "Ooooh pretty!",
-    "Please send help",
-    "Oh no... ",
 }
 
 return {
