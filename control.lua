@@ -59,6 +59,7 @@ end
 ---@param color Color
 ---@return Color
 local function adjust_color(color)
+    if not storage.spider_color_adjustment_enabled then return color end
     local min, max = -1, 1
     local r, g, b, a = color.r * 255, color.g * 255, color.b * 255, color.a and color.a * 255 or 255
     local adjustment_chance = 1 / 180
@@ -569,6 +570,24 @@ local function on_object_destroyed(event)
     remove_spider(event.registration_number)
 end
 
+local function initialize_storage()
+    if storage.spider_color_adjustment_enabled == nil then
+        storage.spider_color_adjustment_enabled = true
+    end
+end
+
+---@param event CustomCommandData
+local function toggle_spider_color_adjustsment(event)
+    storage.spider_color_adjustment_enabled = not storage.spider_color_adjustment_enabled
+    local player = event.player_index and game.get_player(event.player_index)
+    local player_name = player and get_chatty_name(player.character) or "Server"
+    game.print("Sentient Spiders: spider color adjustment " .. (storage.spider_color_adjustment_enabled and "[color=green]enabled[/color]" or "[color=red]disabled[/color]") .. " by " .. player_name)
+    return storage.spider_color_adjustment_enabled
+end
+
+local function add_commands()
+    commands.add_command("toggle-spider-color-adjustment", "Spidertron colors can gradually change as the spider ages. Toggle to enable/disable this behavior.", toggle_spider_color_adjustsment)
+end
 require("interface")
 script.on_init(reset_stored_spiders)
 script.on_configuration_changed(reset_stored_spiders)
