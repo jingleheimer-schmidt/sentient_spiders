@@ -380,6 +380,13 @@ local function on_nth_tick(event)
     end
 end
 
+---@param entities LuaEntity[]
+---@return LuaEntity?
+local function choose_an_entity(entities)
+    local entity = entities[math.random(#entities)]
+    return entity
+end
+
 ---@param event EventData.on_spider_command_completed
 local function on_spider_command_completed(event)
     local spidertron = event.vehicle
@@ -394,13 +401,13 @@ local function on_spider_command_completed(event)
         local find_entities_filter = {
             force = spidertron.force,
             position = spidertron.position,
-            radius = 5,
+            radius = 10,
             to_be_deconstructed = false,
-            limit = 1,
+            -- limit = 1,
         }
         local player_built_entities = spidertron.surface.find_entities_filtered(find_entities_filter)
-        if player_built_entities[1] then
-            local entity = player_built_entities[1]
+        local entity = choose_an_entity(player_built_entities)
+        if entity and entity.valid then
             local type_specific_messages = specific_entity_spider_speak_messages[entity.type]
             if type_specific_messages then
                 spider_speak(spidertron, type_specific_messages[math.random(#type_specific_messages)])
