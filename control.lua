@@ -625,9 +625,26 @@ local function add_commands()
     commands.add_command("toggle-spider-speak", "Spidertrons can make little comments about their surroundings. Still in development. Toggle to enable/disable this behavior.", toggle_spider_speak)
     commands.add_command("verbose-sentient-spiders", "Enable/disable verbose debug printing for sentient spiders mod.", toggle_verbose_mode)
 end
+
+local function on_init()
+    reset_stored_spiders()
+    initialize_storage()
+    add_commands()
+end
+
+local function on_load()
+    add_commands()
+end
+
+local function on_configuration_changed()
+    reset_stored_spiders()
+    initialize_storage()
+end
+
 require("interface")
-script.on_init(reset_stored_spiders)
-script.on_configuration_changed(reset_stored_spiders)
+script.on_init(on_init)
+script.on_load(on_load)
+script.on_configuration_changed(on_configuration_changed)
 script.on_nth_tick(60, on_nth_tick)
 script.on_event(defines.events.on_tick, on_tick)
 script.on_event(defines.events.on_built_entity, on_built_entity)
