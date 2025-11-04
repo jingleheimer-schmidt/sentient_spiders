@@ -5,24 +5,24 @@ Kick that raw fish into overdrive and give spidertrons a little sentience, as a 
 
 Spidertrons automatically follow their last driver.
 Idle spidertrons wander around the factory.
-Stuck spidertrons try to find another path to their destination.
+Stuck spidertrons find another path to their destination.
 
 ---------------------
 # Features
 
 - When a player exits a spidertron, the spidertron will follow the player.
 - When a player enters a vehicle, any spidertrons following the player will follow the vehicle.
-- Spidertrons that were following a player that changed surfaces will re-follow the player on return to the surface
-- When a spidertron is not following anything, it will wander around inspecting the factory (see FAQ for conditions).
-- When a spidertron is stuck trying to reach a waypoint, it will attempt to modify its own path to find a way around the obstacle.
-- Unnamed spidertrons are given a random backer name when built
+- Spidertrons that were following a player that changed surfaces will re-follow the player on return to the surface.
+- When a spidertron is not following anything, it will wander around inspecting the factory.
+- When a spidertron is stuck trying to reach a waypoint, it will modify its own path to find a way around the obstacle.
+- Unnamed spidertrons are given a random backer name when built.
+- Spidertron colors gradually drift and evolve as they age.
 - Want a little more info? Check out the [FAQ tab](https://mods.factorio.com/mod/sentient_spiders/faq) for specific details on how the mod works.
 
 ---------------------
 ## Companion Mods
 Sentient Spiders is a companion mod to:
-[trainsaver](https://mods.factorio.com/mod/trainsaver)
-[Spider Trails](https://mods.factorio.com/mod/spider-trails)
+[trainsaver](https://mods.factorio.com/mod/trainsaver) - A cinematic screensaver mod that follows trains. With Sentient Spiders, it’ll follow spidertrons too.
 
 and is recommended with:
 [Spidertron Enhancements](https://mods.factorio.com/mod/SpidertronEnhancements)
