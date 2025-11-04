@@ -179,7 +179,7 @@ end
 local function set_last_interacted_tick(spidertron)
     ---@type table<UnitNumber, uint>
     storage.last_interacted_tick = storage.last_interacted_tick or {}
-    storage.last_interacted_tick[spidertron.unit_number] = game.tick
+    storage.last_interacted_tick[script.register_on_object_destroyed(spidertron)] = game.tick
     chatty_print(get_chatty_name(spidertron) .. " last_interacted_tick set to [" .. game.tick .. "]")
 end
 
@@ -187,7 +187,7 @@ end
 ---@return uint
 local function get_last_interacted_tick(spidertron)
     storage.last_interacted_tick = storage.last_interacted_tick or {}
-    return storage.last_interacted_tick[spidertron.unit_number] or 0
+    return storage.last_interacted_tick[script.register_on_object_destroyed(spidertron)] or 0
 end
 
 ---@param spidertron LuaEntity
@@ -195,7 +195,7 @@ end
 local function set_player_initiated_movement(spidertron, value)
     ---@type table<UnitNumber, boolean>
     storage.player_initiated_movement = storage.player_initiated_movement or {}
-    storage.player_initiated_movement[spidertron.unit_number] = value
+    storage.player_initiated_movement[script.register_on_object_destroyed(spidertron)] = value
     chatty_print(get_chatty_name(spidertron) .. " player_initiated_movement set to [" .. serpent.line(value) .. "]")
 end
 
@@ -203,7 +203,7 @@ end
 ---@return boolean
 local function get_player_initiated_movement(spidertron)
     storage.player_initiated_movement = storage.player_initiated_movement or {}
-    return storage.player_initiated_movement[spidertron.unit_number]
+    return storage.player_initiated_movement[script.register_on_object_destroyed(spidertron)]
 end
 
 ---@param spidertron LuaEntity
