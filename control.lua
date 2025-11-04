@@ -170,9 +170,12 @@ local function spider_has_active_bots(spidertron)
     if not cell then return false end
     local network = cell.logistic_network
     if not network then return false end
-    if network.available_logistic_robots == network.all_logistic_robots then return false end
-    if network.available_construction_robots == network.all_construction_robots then return false end
-    return true
+    local logistic_bots_active = network.available_logistic_robots ~= network.all_logistic_robots
+    local construction_bots_active = network.available_construction_robots ~= network.all_construction_robots
+    if logistic_bots_active or construction_bots_active then
+        return true
+    end
+    return false
 end
 
 ---@param spidertron LuaEntity
