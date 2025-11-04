@@ -75,11 +75,15 @@ end
 ---@param spidertron LuaEntity
 ---@param message string
 local function spider_speak(spidertron, message)
-    local manual_override = true
-    if manual_override then return end
-    if math.random() > 0.5 then return end
+    if not storage.spider_speak_enabled then return end
+    -- if math.random() > 0.5 then return end
     storage.ignored_spidertrons = storage.ignored_spidertrons or {}
     if storage.ignored_spidertrons[spidertron.name] then return end
+    storage.last_spider_speak = storage.last_spider_speak or {}
+    local registration_number = script.register_on_object_destroyed(spidertron)
+    local last_speak_tick = storage.last_spider_speak[registration_number] or 0
+    if game.tick - last_speak_tick < 60 * 25 then return end
+    storage.last_spider_speak[registration_number] = game.tick
     local visible_to_players = {}
     for _, player in pairs(game.connected_players) do
         table.insert(visible_to_players, player.name)
@@ -90,13 +94,13 @@ local function spider_speak(spidertron, message)
         text = message,
         surface = spidertron.surface,
         target = spidertron,
-        target_offset = { 0, -8 },
         alignment = "center",
         color = color,
         scale = 2.5,
         scale_with_zoom = true,
         players = visible_to_players,
-        time_to_live = 60 * 5
+        time_to_live = 60 * 15,
+        use_rich_text = true,
     }
 end
 
@@ -574,6 +578,9 @@ local function initialize_storage()
     if storage.spider_color_adjustment_enabled == nil then
         storage.spider_color_adjustment_enabled = true
     end
+    if storage.spider_speak_enabled == nil then
+        storage.spider_speak_enabled = false
+    end
 end
 
 ---@param event CustomCommandData
@@ -585,8 +592,18 @@ local function toggle_spider_color_adjustsment(event)
     return storage.spider_color_adjustment_enabled
 end
 
+---@param event CustomCommandData
+local function toggle_spider_speak(event)
+    storage.spider_speak_enabled = not storage.spider_speak_enabled
+    local player = event.player_index and game.get_player(event.player_index)
+    local player_name = player and get_chatty_name(player.character) or "Server"
+    game.print("Sentient Spiders: spider speak " .. (storage.spider_speak_enabled and "[color=green]enabled[/color]" or "[color=red]disabled[/color]") .. " by " .. player_name)
+    return storage.spider_speak_enabled
+end
+
 local function add_commands()
     commands.add_command("toggle-spider-color-adjustment", "Spidertron colors can gradually change as the spider ages. Toggle to enable/disable this behavior.", toggle_spider_color_adjustsment)
+    commands.add_command("toggle-spider-speak", "Spidertrons can make little comments about their surroundings. Still in development. Toggle to enable/disable this behavior.", toggle_spider_speak)
 end
 require("interface")
 script.on_init(reset_stored_spiders)

@@ -2,6 +2,7 @@
 Version: 0.1.3
 Date: ????
   Features:
+    - added /toggle-spider-speak command
     - added /toggle-spider-color-adjustment command
   Changes:
     - expanded the ignored entity types list
