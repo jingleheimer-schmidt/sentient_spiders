@@ -2,6 +2,7 @@
 Version: 0.1.3
 Date: ????
   Features:
+    - added /verbose-sentient-spiders command to toggle verbose debug printing
     - added /toggle-spider-speak command
     - added /toggle-spider-color-adjustment command
   Changes:

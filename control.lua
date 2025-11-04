@@ -10,8 +10,6 @@ local generic_spider_speak_messages = spider_speak_messages.generic_spider_speak
 
 ---@param message string
 local function chatty_print(message)
-    storage.chatty_print = false
-    -- storage.chatty_print = true
     if not storage.chatty_print then return end
     game.print("[" .. game.tick .. "] " .. message, { sound = defines.print_sound.never })
 end
@@ -581,6 +579,9 @@ local function initialize_storage()
     if storage.spider_speak_enabled == nil then
         storage.spider_speak_enabled = false
     end
+    if storage.chatty_print == nil then
+        storage.chatty_print = false
+    end
 end
 
 ---@param event CustomCommandData
@@ -601,9 +602,19 @@ local function toggle_spider_speak(event)
     return storage.spider_speak_enabled
 end
 
+---@param event CustomCommandData
+local function toggle_verbose_mode(event)
+    storage.chatty_print = not storage.chatty_print
+    local player = event.player_index and game.get_player(event.player_index)
+    local player_name = player and get_chatty_name(player.character) or "Server"
+    game.print("Sentient Spiders: verbose debug printing " .. (storage.chatty_print and "[color=green]enabled[/color]" or "[color=red]disabled[/color]") .. " by " .. player_name)
+    return storage.chatty_print
+end
+
 local function add_commands()
     commands.add_command("toggle-spider-color-adjustment", "Spidertron colors can gradually change as the spider ages. Toggle to enable/disable this behavior.", toggle_spider_color_adjustsment)
     commands.add_command("toggle-spider-speak", "Spidertrons can make little comments about their surroundings. Still in development. Toggle to enable/disable this behavior.", toggle_spider_speak)
+    commands.add_command("verbose-sentient-spiders", "Enable/disable verbose debug printing for sentient spiders mod.", toggle_verbose_mode)
 end
 require("interface")
 script.on_init(reset_stored_spiders)
