@@ -207,6 +207,20 @@ local function get_player_initiated_movement(spidertron)
 end
 
 ---@param spidertron LuaEntity
+local function set_last_finished_wandering_tick(spidertron)
+    ---@type table<UnitNumber, uint>
+    storage.last_finished_wandering_tick = storage.last_finished_wandering_tick or {}
+    storage.last_finished_wandering_tick[script.register_on_object_destroyed(spidertron)] = game.tick
+    chatty_print(get_chatty_name(spidertron) .. " last_finished_wandering_tick set to [" .. game.tick .. "]")
+end
+
+---@param spidertron LuaEntity
+local function get_last_finished_wandering_tick(spidertron)
+    storage.last_finished_wandering_tick = storage.last_finished_wandering_tick or {}
+    return storage.last_finished_wandering_tick[script.register_on_object_destroyed(spidertron)] or 0
+end
+
+---@param spidertron LuaEntity
 local function nudge_spidertron(spidertron)
     local autopilot_destinations = spidertron.autopilot_destinations
     local destination_count = #autopilot_destinations
@@ -354,6 +368,9 @@ local function on_nth_tick(event)
         if get_last_interacted_tick(spidertron) + 60 * 60 * 5 > game.tick then
             goto next_spidertron
         end
+        if get_last_finished_wandering_tick(spidertron) + 60 * 15 > game.tick then
+            goto next_spidertron
+        end
         if (math.random(100) < 99) then
             goto next_spidertron
         end
@@ -372,6 +389,7 @@ local function on_spider_command_completed(event)
             set_last_interacted_tick(spidertron)
             set_player_initiated_movement(spidertron, false)
         end
+        set_last_finished_wandering_tick(spidertron)
         ---@type EntitySearchFilters
         local find_entities_filter = {
             force = spidertron.force,
