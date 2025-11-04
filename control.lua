@@ -19,11 +19,12 @@ end
 local function get_chatty_name(entity)
     if not entity then return "" end
     local id = entity.entity_label or entity.backer_name or entity.unit_number or script.register_on_object_destroyed(entity)
+    local color = entity.color
     if entity.type == "character" and entity.player then
         id = entity.player.name
+        color = entity.player.color
     end
     local name = "[img=entity/" .. entity.name .. "] " .. id
-    local color = entity.color
     if color then
         name = string.format("[color=%.5f,%.5f,%.5f]%s[/color]", color.r, color.g, color.b, name)
     end
