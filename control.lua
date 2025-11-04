@@ -371,6 +371,9 @@ local function on_nth_tick(event)
         if get_last_finished_wandering_tick(spidertron) + 60 * 15 > game.tick then
             goto next_spidertron
         end
+        if (math.random() < 1 / 50) then
+            spider_speak(spidertron, idle_spider_speak_messages[math.random(#idle_spider_speak_messages)])
+        end
         if (math.random(100) < 99) then
             goto next_spidertron
         end
@@ -415,8 +418,29 @@ local function on_spider_command_completed(event)
                 spider_speak(spidertron, generic_spider_speak_messages[math.random(#generic_spider_speak_messages)])
             end
         end
-    elseif destinations == 10 then
-        spider_speak(spidertron, on_the_move_spider_speak_messages[math.random(#on_the_move_spider_speak_messages)])
+    elseif (destinations % 20) == 0 then
+        if math.random() > 1 / 25 then
+            ---@type EntitySearchFilters
+            local find_entities_filter = {
+                force = spidertron.force,
+                position = spidertron.position,
+                radius = 10,
+                to_be_deconstructed = false,
+                -- limit = 1,
+            }
+            local player_built_entities = spidertron.surface.find_entities_filtered(find_entities_filter)
+            local entity = choose_an_entity(player_built_entities)
+            if entity and entity.valid then
+                local type_specific_messages = specific_entity_spider_speak_messages[entity.type]
+                if type_specific_messages then
+                    spider_speak(spidertron, type_specific_messages[math.random(#type_specific_messages)])
+                else
+                    spider_speak(spidertron, on_the_move_spider_speak_messages[math.random(#on_the_move_spider_speak_messages)])
+                end
+            end
+        else
+            spider_speak(spidertron, on_the_move_spider_speak_messages[math.random(#on_the_move_spider_speak_messages)])
+        end
     end
 end
 
@@ -429,7 +453,6 @@ local function on_tick(event)
             goto next_spidertron
         end
         send_spider_wandering(spidertron)
-        spider_speak(spidertron, idle_spider_speak_messages[math.random(#idle_spider_speak_messages)])
         ::next_spidertron::
     end
     for id, spidertron in pairs(storage.spidertrons) do
