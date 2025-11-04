@@ -554,7 +554,7 @@ local function remove_spider(registration_number)
     storage.spidertrons[registration_number] = nil
 end
 
-local function initialize_globals()
+local function reset_stored_spiders()
     storage.spidertrons = {}
     for _, surface in pairs(game.surfaces) do
         for _, spidertron in pairs(surface.find_entities_filtered { type = "spider-vehicle" }) do
@@ -593,8 +593,8 @@ local function on_object_destroyed(event)
 end
 
 require("interface")
-script.on_init(initialize_globals)
-script.on_configuration_changed(initialize_globals)
+script.on_init(reset_stored_spiders)
+script.on_configuration_changed(reset_stored_spiders)
 script.on_nth_tick(60, on_nth_tick)
 script.on_event(defines.events.on_tick, on_tick)
 script.on_event(defines.events.on_built_entity, on_built_entity)
