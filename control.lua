@@ -555,6 +555,8 @@ local function remove_spider(registration_number)
 end
 
 local function reset_stored_spiders()
+    remote.call("sentient-spiders", "ignore_spider", "companion")
+    remote.call("sentient-spiders", "ignore_spider", "constructron")
     storage.spidertrons = {}
     for _, surface in pairs(game.surfaces) do
         for _, spidertron in pairs(surface.find_entities_filtered { type = "spider-vehicle" }) do
@@ -563,8 +565,6 @@ local function reset_stored_spiders()
             ::next_spidertron::
         end
     end
-    remote.call("sentient-spiders", "ignore_spider", "companion")
-    remote.call("sentient-spiders", "ignore_spider", "constructron")
 end
 
 ---@return string
