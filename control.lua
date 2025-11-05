@@ -393,6 +393,21 @@ local function choose_an_entity(entities)
     return entity
 end
 
+---@param target LuaEntity
+---@return LuaEntity[]
+local function get_nearby_entities(target)
+    ---@type EntitySearchFilters
+    local find_entities_filter = {
+        force = target.force,
+        position = target.position,
+        radius = 10,
+        to_be_deconstructed = false,
+        -- limit = 1,
+    }
+    local player_built_entities = target.surface.find_entities_filtered(find_entities_filter)
+    return player_built_entities
+end
+
 ---@param event EventData.on_spider_command_completed
 local function on_spider_command_completed(event)
     local spidertron = event.vehicle
@@ -403,16 +418,7 @@ local function on_spider_command_completed(event)
             set_player_initiated_movement(spidertron, false)
         end
         set_last_finished_wandering_tick(spidertron)
-        ---@type EntitySearchFilters
-        local find_entities_filter = {
-            force = spidertron.force,
-            position = spidertron.position,
-            radius = 10,
-            to_be_deconstructed = false,
-            -- limit = 1,
-        }
-        local player_built_entities = spidertron.surface.find_entities_filtered(find_entities_filter)
-        local entity = choose_an_entity(player_built_entities)
+        local entity = choose_an_entity(get_nearby_entities(spidertron))
         if entity and entity.valid then
             local type_specific_messages = specific_entity_spider_speak_messages[entity.type]
             if type_specific_messages then
@@ -423,16 +429,7 @@ local function on_spider_command_completed(event)
         end
     elseif (destinations % 20) == 0 then
         if math.random() > 1 / 25 then
-            ---@type EntitySearchFilters
-            local find_entities_filter = {
-                force = spidertron.force,
-                position = spidertron.position,
-                radius = 10,
-                to_be_deconstructed = false,
-                -- limit = 1,
-            }
-            local player_built_entities = spidertron.surface.find_entities_filtered(find_entities_filter)
-            local entity = choose_an_entity(player_built_entities)
+            local entity = choose_an_entity(get_nearby_entities(spidertron))
             if entity and entity.valid then
                 local type_specific_messages = specific_entity_spider_speak_messages[entity.type]
                 if type_specific_messages then
