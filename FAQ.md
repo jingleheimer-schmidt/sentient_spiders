@@ -1,3 +1,4 @@
+
 # Q: What does it mean for a spider to wander?
 - Every second, there is a 2% chance that an idle spidertron will wander off to a different part of the factory. A spidertron is considered idle if all of the following conditions are true:
   - the spidertron is not moving, not following a target, and has no active robots
