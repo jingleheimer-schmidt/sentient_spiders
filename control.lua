@@ -389,6 +389,7 @@ end
 ---@param entities LuaEntity[]
 ---@return LuaEntity?
 local function choose_an_entity(entities)
+    if not entities or #entities == 0 then return nil end
     local entity = entities[math.random(#entities)]
     return entity
 end
