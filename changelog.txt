@@ -8,6 +8,8 @@ Date: ????
   Changes:
     - expanded the ignored entity types list
     - reduced color adjustment speed
+  Modding:
+    - added compatibility with Spidertron Patrols to prevent spiders in automatic patrol mode from wandering
 ---------------------------------------------------------------------------------------------------
 Version: 0.1.2
 Date: 2025-09-01
