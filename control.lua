@@ -345,12 +345,14 @@ local function spidertron_is_idle(spidertron)
     if spidertron.speed ~= 0 then return false end
     if spidertron.follow_target then return false end
     if spider_has_active_bots(spidertron) then return false end
-    if mods["SpidertronPatrol"] then
-        -- https://github.com/tburrows13/SpidertronPatrols/blob/master/scripts/remote-interface.lua
-        -- If present, on_patrol means the spidertron is in automatic mode.
-        ---@type { spidertron: LuaEntity ,on_patrol: any? }?
-        local patrol_data = remote.call("SpidertronPatrol", "get_patrol_data", spidertron)
-        if patrol_data and patrol_data.on_patrol then return false end
+    if script.active_mods["SpidertronPatrols"] then
+        if remote.interfaces["SpidertronPatrols"] and remote.interfaces["SpidertronPatrols"]["get_patrol_data"] then
+            -- https://github.com/tburrows13/SpidertronPatrols/blob/master/scripts/remote-interface.lua
+            -- If present, on_patrol means the spidertron is in automatic mode.
+            ---@type { spidertron: LuaEntity ,on_patrol: any? }?
+            local patrol_data = remote.call("SpidertronPatrols", "get_patrol_data", spidertron)
+            if patrol_data and patrol_data.on_patrol then return false end
+        end
     end
     return true
 end
